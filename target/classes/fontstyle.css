@@ -1,0 +1,14 @@
+@font-face {
+    font-family: 'DTM-Mono';
+    src: url('fonts/DTM-Mono.otf');
+}
+
+@font-face {
+    font-family: 'DTM-Sans';
+    src: url('fonts/DTM-Sans.otf');
+}
+
+.text {
+    -fx-font-family: "DTM-Sans";
+    -fx-font-size: 14px;
+}
