@@ -20,11 +20,8 @@ import javafx.util.Duration;
 import java.util.*;
 
 public class Main extends Application {
-    attackButton attackButton = new attackButton();
-    actButton actButton = new actButton();
-    itemButton itemButton = new itemButton();
-    mercyButton mercyButton = new mercyButton();
-    interactiveButton[] buttons = {attackButton, actButton, itemButton, mercyButton};
+    interactiveButton[] buttons = {new attackButton(), new actButton(), new itemButton(), new mercyButton()};
+    int currentSelectedButton = 0;
 
     boolean atTopBorder = false;
     boolean atBottomBorder = false;
@@ -74,7 +71,7 @@ public class Main extends Application {
         //fb end
 
         //player start
-        player = new Player(fb.getX() + fb.getWidth()/2 - 20, fb.getY() + fb.getHeight()/2 - 20, 40, 40); //For the player position, we cannot just take the width and height into account but also the moved X and Y position of the fb
+        player = new Player(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5, 45, 45); //For the player position, we cannot just take the width and height into account but also the moved X and Y position of the fb
         //player end
 
         //Health start
@@ -89,7 +86,7 @@ public class Main extends Application {
         addButtons();
         //Buttons end
 
-        root.getChildren().addAll(player, player.collisionBox, underFB, horizontalButtonAlignment, fb);
+        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb);
 
         //Window stuff start
         primaryStage.setScene(scene);
@@ -108,6 +105,14 @@ public class Main extends Application {
         //OnKey start
         scene.setOnKeyPressed(event -> {
             keysPressed.add(event.getCode().toString());
+
+            if(keysPressed.contains("D") && player.getState().equals("menu")) {
+                selectButton(true);
+            }
+            else if(keysPressed.contains("A") && player.getState().equals("menu")) {
+                selectButton(false);
+            }
+
             if (keysPressed.contains("Z")) {
                 player.drawCollision();
             }
@@ -122,10 +127,16 @@ public class Main extends Application {
             }
             else if(keysPressed.contains("SPACE")) {
                 if(player.state.equals("normal")) {
-                    player.setState("gravity");
+                    //player.setState("gravity");
+                    player.setState("menu");
+                    currentSelectedButton = 0;
+                    player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth()/3, horizontalButtonAlignment.getLayoutY());
+                    buttons[currentSelectedButton].select(buttons);
                 }
                 else {
                     player.setState("normal");
+                    deselectButtons();
+                    player.movePlayer(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5);
                 }
             }
             else if(keysPressed.contains("G")) {
@@ -148,33 +159,34 @@ public class Main extends Application {
         // start animation timer to update everything necessary start
         new AnimationTimer() {
             public void handle(long currentNanoTime) {
-                atLeftBorder = player.getX() < fb.getX() + player.getWidth()/5;
-                atRightBorder = player.getX() > (fb.getX() + fb.getWidth()) - (player.getWidth() + player.getWidth()/5);
-                atTopBorder = player.getY() < fb.getY() + player.getHeight()/5;
-                atBottomBorder = player.getY() > (fb.getY() + fb.getHeight()) - (player.getHeight() + player.getHeight()/5);
-                //we need the /5 to get accurate sprite border stuff
+                if (!player.getState().equals("menu")) {
+                    atLeftBorder = player.getX() < fb.getX() + player.getWidth() / 6;
+                    atRightBorder = player.getX() > (fb.getX() + fb.getWidth()) - (player.getWidth() + player.getWidth() / 6);
+                    atTopBorder = player.getY() < fb.getY() + player.getHeight() / 6;
+                    atBottomBorder = player.getY() > (fb.getY() + fb.getHeight()) - (player.getHeight() + player.getHeight() / 6);
+                    //we need the /5 to get accurate sprite border stuff
 
-                Boolean[] borders = {atLeftBorder, atRightBorder, atTopBorder, atBottomBorder};
-                player.updatePosition(scene.getWidth(), scene.getHeight(), keysPressed, borders, wTimer); //using scene.get to correspond to window size update
-                fb.updatePosition(scene.getWidth(), scene.getHeight(), keysPressed, player.getHeight(), player.getWidth());
-                player.checkBounds(fb, borders);
+                    Boolean[] borders = {atLeftBorder, atRightBorder, atTopBorder, atBottomBorder};
+                    player.updatePosition(scene.getWidth(), scene.getHeight(), keysPressed, borders, wTimer); //using scene.get to correspond to window size update
+                    fb.updatePosition(scene.getWidth(), scene.getHeight(), keysPressed, player.getHeight(), player.getWidth());
+                    player.checkBounds(fb, borders);
 
-                synchronized(projectiles) {
-                    Iterator<Projectile> iterator = projectiles.iterator();
-                    while (iterator.hasNext()) {
-                        Projectile projectile = iterator.next();
-                        projectile.move();
-                        if(projectile.getY() >= (fb.getY() + fb.getHeight()) - (projectile.getHeight() + fb.getStrokeWidth())) {
-                            iterator.remove();
-                            root.getChildren().remove(projectile);
-                            projectile.removeFromList();
-                        }
-                        else if(player.intersects(projectile.getBoundsInLocal()) && !player.isInvincible()) {
-                            player.setCurHealth(1, true);
+                    synchronized (projectiles) {
+                        Iterator<Projectile> iterator = projectiles.iterator();
+                        while (iterator.hasNext()) {
+                            Projectile projectile = iterator.next();
+                            projectile.move();
+                            if (projectile.getY() >= (fb.getY() + fb.getHeight()) - (projectile.getHeight() + fb.getStrokeWidth())) {
+                                iterator.remove();
+                                root.getChildren().remove(projectile);
+                                projectile.removeFromList();
+                            } else if (player.intersects(projectile.getBoundsInLocal()) && !player.isInvincible()) {
+                                player.setCurHealth(1, true);
 
-                            iterator.remove();
-                            root.getChildren().remove(projectile);
-                            projectile.removeFromList();
+                                iterator.remove();
+                                root.getChildren().remove(projectile);
+                                projectile.removeFromList();
+                            }
                         }
                     }
                 }
@@ -268,5 +280,32 @@ public class Main extends Application {
         horizontalButtonAlignment.setLayoutX(underFB.getLayoutX() + buttons[0].getWidth()/2 - fb.getStrokeWidth()/2 + 1.25);
         horizontalButtonAlignment.setLayoutY(underFB.getLayoutY() + buttons[0].getHeight()*2 + healthBar.getHeight());
         horizontalButtonAlignment.setSpacing(fb.getWidth()/9 + buttons[0].getWidth() + fb.getStrokeWidth()/4);
+    }
+
+
+
+    public void selectButton(boolean goRight) {
+        if(goRight) {
+            if(currentSelectedButton >= 3) return;
+            ++currentSelectedButton;
+        }
+        else {
+            if(currentSelectedButton <= 0) return;
+            --currentSelectedButton;
+        }
+        /*
+        Ok...what does setX do here actually?
+        It is simple.
+        We get the X position of the horizontalButtonAlignment, subtract the width of the button, so we are at the start of it, and then we add 1/3 of it to be in the position before the text.
+        However, since we have multiple buttons, we need to account for each position. Luckily for button 0, that would be 0 so everything fits perfectly.
+         */
+        player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth()/3 + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getLayoutX(), horizontalButtonAlignment.getLayoutY());
+        buttons[currentSelectedButton].select(buttons);
+    }
+
+    public void deselectButtons() {
+        for(interactiveButton b : buttons) {
+            b.setSelected(false);
+        }
     }
 }

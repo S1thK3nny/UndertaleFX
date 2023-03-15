@@ -1,5 +1,6 @@
 package com.sith.buttons;
 
+import com.sith.globals;
 import javafx.scene.image.Image;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
@@ -28,6 +29,7 @@ public abstract class interactiveButton extends Rectangle {
     public void setSelected(boolean selected) {
         if(selected) {
             setCurrentImage(buttonSelected);
+            globals.switchCurrentElementSound.play();
         }
         else {
             setCurrentImage(buttonNotSelected);
@@ -46,6 +48,6 @@ public abstract class interactiveButton extends Rectangle {
     }
 
     public void interact() {
-        System.out.println("This is supposed to do something...Did you not override it?");
+        globals.buttonConfirmSound.play();
     }
 }

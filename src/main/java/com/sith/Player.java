@@ -2,13 +2,10 @@ package com.sith;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.media.AudioClip;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-
-import java.io.File;
 import java.util.HashSet;
 
 public class Player extends Rectangle {
@@ -149,6 +146,10 @@ public class Player extends Rectangle {
         this.state = state;
     }
 
+    public String getState() {
+        return state;
+    }
+
     public int getMaxHealth() {
         return maxHealth;
     }
@@ -169,8 +170,7 @@ public class Player extends Rectangle {
         this.curHealth -= damage;
         Main.setHealthText(curHealth, maxHealth, damage);
         if(gotHit) {
-            AudioClip sound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_hurt1.wav").toURI().toString());
-            sound.play();
+            globals.hurtSound.play();
             hitEffect();
         }
     }
@@ -186,5 +186,12 @@ public class Player extends Rectangle {
                 new KeyFrame(Duration.millis(330), e -> invincible = false)
         );
         timeline.play();
+    }
+
+    public void movePlayer(double x, double y) {
+        setX(x);
+        setY(y);
+        collisionBox.setX(x);
+        collisionBox.setY(y);
     }
 }

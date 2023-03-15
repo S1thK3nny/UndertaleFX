@@ -1,7 +1,10 @@
 package com.sith;
 
 import javafx.scene.image.Image;
+import javafx.scene.media.AudioClip;
 import javafx.scene.text.Font;
+
+import java.io.File;
 
 public class globals {
     //Player icon hearts
@@ -22,4 +25,9 @@ public class globals {
     public static final Image actButtonSelected = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/buttons/spr_talkbt_1.png");
     public static final Image itemButtonSelected = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/buttons/spr_itembt_1.png");
     public static final Image mercyButtonSelected = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/buttons/spr_sparebt_1.png");
+
+    //Sounds
+    public static final AudioClip hurtSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_hurt1.wav").toURI().toString());
+    public static final AudioClip buttonConfirmSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_select.wav").toURI().toString());
+    public static final AudioClip switchCurrentElementSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_squeak.wav").toURI().toString()); //Ok look, I get it, switchCurrentElement is not a good name but squeak? Come on Toby, that took me at least a minute to find
 }
