@@ -151,6 +151,7 @@ public class Main extends Application {
                     currentSelectedButton = 0;
                     movePlayerToButton(currentSelectedButton);
                     buttons[currentSelectedButton].select(buttons);
+                    timeline.stop();
 
                 }
                 else {
@@ -364,25 +365,35 @@ public class Main extends Application {
         switch (direction) {
             case "up" -> {
                 if(currentSelectedInteraction>=2 && buttons[currentSelectedButton].getText(currentSelectedInteraction-2).isVisible()) {
+                    globals.switchCurrentElementSound.play();
                     currentSelectedInteraction-=2;
                 }
                 else if(currentSelectedInteraction>=1  && buttons[currentSelectedButton].getText(currentSelectedInteraction-1).isVisible()) {
+                    globals.switchCurrentElementSound.play();
                     --currentSelectedInteraction;
                 }
             }
             case "left" -> {
-                if(currentSelectedInteraction>0  && buttons[currentSelectedButton].getText(currentSelectedInteraction-1).isVisible()) --currentSelectedInteraction;
+                if(currentSelectedInteraction>0  && buttons[currentSelectedButton].getText(currentSelectedInteraction-1).isVisible()) {
+                    --currentSelectedInteraction;
+                    globals.switchCurrentElementSound.play();
+                }
             }
             case "down" -> {
                 if(currentSelectedInteraction+2 < buttons[currentSelectedButton].getTexts().size()  && buttons[currentSelectedButton].getText(currentSelectedInteraction+2).isVisible()) {
+                    globals.switchCurrentElementSound.play();
                     currentSelectedInteraction+=2;
                 }
                 else if(currentSelectedInteraction+1 < buttons[currentSelectedButton].getTexts().size()  && buttons[currentSelectedButton].getText(currentSelectedInteraction+1).isVisible()) {
+                    globals.switchCurrentElementSound.play();
                     ++currentSelectedInteraction;
                 }
             }
             case "right" -> {
-                if(currentSelectedInteraction<buttons[currentSelectedButton].getTexts().size()-1  && buttons[currentSelectedButton].getText(currentSelectedInteraction+1).isVisible()) ++currentSelectedInteraction;
+                if(currentSelectedInteraction<buttons[currentSelectedButton].getTexts().size()-1  && buttons[currentSelectedButton].getText(currentSelectedInteraction+1).isVisible()) {
+                    globals.switchCurrentElementSound.play();
+                    ++currentSelectedInteraction;
+                }
             }
         }
         player.movePlayer(buttons[currentSelectedButton].getTextX(currentSelectedInteraction), buttons[currentSelectedButton].getTextY(currentSelectedInteraction));
