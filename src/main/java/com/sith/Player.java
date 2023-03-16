@@ -24,7 +24,7 @@ public class Player extends Rectangle {
     boolean invincible = false;
 
     private final String name = "CHARA";
-    private final int LV = 1;
+    private final int LV = 7;
     private final int maxHealth;
     private int curHealth;
 
@@ -140,8 +140,15 @@ public class Player extends Rectangle {
 
     public void setState(String state) {
         switch (state) {
-            case "normal", default -> setFill(new ImagePattern(globals.redHeart));
-            case "gravity" -> setFill(new ImagePattern(globals.blueHeart));
+            case "normal", default -> {
+                setFill(new ImagePattern(globals.redHeart));
+                setVisible(true);
+            }
+            case "gravity" -> {
+                setFill(new ImagePattern(globals.blueHeart));
+                setVisible(true);
+            }
+            case "gone" -> setVisible(false);
         }
         this.state = state;
     }

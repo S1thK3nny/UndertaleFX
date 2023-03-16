@@ -26,8 +26,15 @@ public class mercyButton extends interactiveButton {
     }
 
     @Override
-    public void interact() {
-        super.interact();
+    public void openButton() {
+        super.openButton();
         System.out.println("Mercy button...");
+        System.out.println("No functionality yet...");
+    }
+
+    public String interact(int option) {
+        super.interact(option);
+        if(option>=texts.size() || option<0) return super.interact(option);
+        return "* You tried to " + texts.get(option).getText().substring(2) + "\n* ...we will see how that turns out!";
     }
 }

@@ -64,11 +64,16 @@ public abstract class interactiveButton extends Rectangle {
         this.setFill(new ImagePattern(img));
     }
 
-    public void interact() {
+    public void openButton() {
         globals.buttonConfirmSound.play();
         options.setTranslateX(Main.fb.getX()*1.5 - Main.fb.getStrokeWidth());
         options.setTranslateY(Main.fb.getY() + t.getBoundsInLocal().getHeight()/2 - Main.fb.getStrokeWidth());
         options.setVisible(true);
+    }
+
+    public String interact(int currentSelectedInteraction) {
+        globals.buttonConfirmSound.play();
+        return "Oh no...what happened here?!";
     }
 
     public HBox getOptions() {
@@ -90,10 +95,6 @@ public abstract class interactiveButton extends Rectangle {
         return texts;
     }
 
-    public Text getText(int i) {
-        return texts.get(i);
-    }
-
     public double getTextX(int i, double playerWidth) {
         if(i>texts.size() || i<0) return 0;
         //I swear to god, this HAS TO BE 0!!! DO NOT CHANGE IT!
@@ -105,5 +106,9 @@ public abstract class interactiveButton extends Rectangle {
         //IT TOOK ME HALF AN HOUR TO COME UP WITH THIS; DO NOT EVER MESS WITH THIS AGAIN
         //return Main.fb.getY() + texts.get(i).getLayoutY() + texts.get(i).getParent().getLayoutY() + texts.get(i).getParent().getBoundsInLocal().getCenterY();
         return Main.fb.getY() + texts.get(i).getLayoutY() - playerHeight/2;
+    }
+
+    public String getUsed(int currentSelectedInteraction) {
+        return getTexts().get(currentSelectedInteraction).getText().substring(2);
     }
 }

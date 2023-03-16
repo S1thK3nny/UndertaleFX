@@ -14,6 +14,7 @@ public class FightingBox extends Rectangle {
     private static final int MOVE_AMOUNT = 3; // how many pixels to move each time
     private boolean isMoving = false;
     private boolean isResizing = false;
+    private boolean typing = false;
     private int index = 0;
 
     private final Text currentText = new Text("* What do we have here? Let's have some fun! :)");
@@ -104,31 +105,57 @@ public class FightingBox extends Rectangle {
         this.isResizing = isResizing;
     }
 
-    public void setCurrentText(String text) {
-        currentStringText = text;
-    }
-
     public void setCurrentTextVisible(boolean b) {
         currentText.setVisible(b);
-        if(b) displayText();
+        if(b) displayText(currentStringText);
+        if(!b) {
+            //Set Text for next round
+            currentStringText = "* Let's get this over with...\n* Wait what?";
+            stopTextTimeline();
+        }
     }
 
-    public void displayText() {
+    public void setCurrentTextVisible(boolean b, String s, Player player) {
+        currentText.setVisible(b);
+        currentStringText = s;
+        if(b) {
+            displayText(s);
+            player.setState("gone");
+        }
+        if(!b) stopTextTimeline();
+    }
+
+    public void displayText(String s) {
         index = 0;
         currentText.setText("");
         timeline = new Timeline(
-                new KeyFrame(Duration.millis(30), event -> {
-                    currentText.setText(currentText.getText() + currentStringText.charAt(index));
+                new KeyFrame(Duration.millis(33), event -> {
+                    typing = true;
+                    currentText.setText(currentText.getText() + s.charAt(index));
                     ++index;
                     globals.charAppearSound.play();
                 })
         );
 
-        timeline.setCycleCount(currentStringText.length());
+        timeline.setCycleCount(s.length());
+        timeline.setOnFinished(e -> typing = false);
         timeline.play();
     }
 
-    public void stopTextTimeline() {
+    private void stopTextTimeline() {
         timeline.stop();
+    }
+
+    public void skipDialog() {
+        if(!currentText.getText().equals(currentStringText)) {
+            stopTextTimeline();
+            // Print out the remaining letters
+            currentText.setText(currentText.getText() + currentStringText.substring(index));
+            typing = false;
+        }
+    }
+
+    public boolean hasFinishedDialog() {
+        return !typing;
     }
 }

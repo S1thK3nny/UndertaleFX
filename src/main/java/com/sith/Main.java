@@ -2,10 +2,7 @@ package com.sith;
 
 import com.sith.buttons.*;
 import com.sith.enemies.Projectile;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -142,6 +139,39 @@ public class Main extends Application {
                         selectInteraction("down");
                     }
                 }
+
+                if (keysPressed.contains("Z") && !fb.getIsResizing()) {
+                    //player.drawCollision();
+                    if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
+                        buttons[currentSelectedButton].openButton();
+                        interactiveButton.wentIntoButton = true;
+                        fb.setCurrentTextVisible(false);
+                        //Yes, this excludes the fight button.
+                        if(currentSelectedButton>0) {
+                            player.movePlayer(buttons[currentSelectedButton].getTextX(0, player.getWidth()), buttons[currentSelectedButton].getTextY(0, player.getHeight()));
+                            currentSelectedInteraction = 0;
+                        }
+                    }
+                    else if(interactiveButton.wentIntoButton && currentSelectedButton>0) {
+                        deselectButtons();
+                        buttons[currentSelectedButton].hideOptions();
+                        fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact(currentSelectedInteraction), player);
+                    }
+                }
+                else if(keysPressed.contains("X") && interactiveButton.wentIntoButton) {
+                    interactiveButton.wentIntoButton = false;
+                    buttons[currentSelectedButton].hideOptions();
+                    movePlayerToButton(currentSelectedButton);
+                    fb.setCurrentTextVisible(true);
+                }
+            }
+            else if(player.getState().equals("gone")) {
+                if(keysPressed.contains("Z")) {
+                    if(fb.hasFinishedDialog()) finishPlayerMove();
+                }
+                else if(keysPressed.contains("X")) {
+                    if(!fb.hasFinishedDialog()) fb.skipDialog();
+                }
             }
 
             if(keysPressed.contains("W") && player.getState().equals("gravity")) {
@@ -164,11 +194,7 @@ public class Main extends Application {
                     resetFB();
                 }
                 else {
-                    player.setState("normal");
-                    interactiveButton.wentIntoButton = false;
-                    deselectButtons();
-                    buttons[currentSelectedButton].hideOptions();
-                    player.movePlayer(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5);
+                    finishPlayerMove();
                 }
             }
             else if(keysPressed.contains("G")) {
@@ -180,28 +206,6 @@ public class Main extends Application {
                     timeline.play();
                 }
                 throwProjectiles = !throwProjectiles;
-            }
-
-
-            if (keysPressed.contains("Z") && !fb.getIsResizing()) {
-                //player.drawCollision();
-                if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
-                    buttons[currentSelectedButton].interact();
-                    interactiveButton.wentIntoButton = true;
-                    fb.stopTextTimeline();
-                    fb.setCurrentTextVisible(false);
-                    //Yes, this excludes the fight button.
-                    if(currentSelectedButton>0) {
-                        player.movePlayer(buttons[currentSelectedButton].getTextX(0, player.getWidth()), buttons[currentSelectedButton].getTextY(0, player.getHeight()));
-                        currentSelectedInteraction = 0;
-                    }
-                }
-            }
-            else if(keysPressed.contains("X") && interactiveButton.wentIntoButton) {
-                interactiveButton.wentIntoButton = false;
-                buttons[currentSelectedButton].hideOptions();
-                movePlayerToButton(currentSelectedButton);
-                fb.setCurrentTextVisible(true);
             }
         });
 
@@ -253,36 +257,41 @@ public class Main extends Application {
 
     //We're using a timeline to make it look like an animation
     public void resetFB() {
-        fb.setIsResizing(true);
-        Timeline resize = new Timeline();
-        Timeline move = new Timeline();
+        if(fb.getWidth() != fbWidth || fb.getHeight() != fbHeight || fb.getX() != fbX || fb.getY() != fbY) {
+            fb.setIsResizing(true);
+            Timeline resize = new Timeline();
+            Timeline move = new Timeline();
 
-        resize.getKeyFrames().addAll(
-                new KeyFrame(Duration.millis(0),
-                        new KeyValue(fb.widthProperty(), fb.getWidth()),
-                        new KeyValue(fb.heightProperty(), fb.getHeight())),
-                new KeyFrame(Duration.millis(275),
-                        new KeyValue(fb.widthProperty(), fbWidth),
-                        new KeyValue(fb.heightProperty(), fbHeight))
+            resize.getKeyFrames().addAll(
+                    new KeyFrame(Duration.millis(0),
+                            new KeyValue(fb.widthProperty(), fb.getWidth()),
+                            new KeyValue(fb.heightProperty(), fb.getHeight())),
+                    new KeyFrame(Duration.millis(275),
+                            new KeyValue(fb.widthProperty(), fbWidth),
+                            new KeyValue(fb.heightProperty(), fbHeight))
 
-        );
+            );
 
-        move.getKeyFrames().addAll(
-                new KeyFrame(Duration.millis(0),
-                        new KeyValue(fb.xProperty(), fb.getX()),
-                        new KeyValue(fb.yProperty(), fb.getY())),
-                new KeyFrame(Duration.millis(250),
-                        new KeyValue(fb.xProperty(), fbX),
-                        new KeyValue(fb.yProperty(), fbY)),
-                new KeyFrame(Duration.millis(250), e -> {
-                    fb.setIsResizing(false);
-                    fb.setCurrentTextVisible(true);
-                })
-        );
+            move.getKeyFrames().addAll(
+                    new KeyFrame(Duration.millis(0),
+                            new KeyValue(fb.xProperty(), fb.getX()),
+                            new KeyValue(fb.yProperty(), fb.getY())),
+                    new KeyFrame(Duration.millis(200),
+                            new KeyValue(fb.xProperty(), fbX),
+                            new KeyValue(fb.yProperty(), fbY)),
+                    new KeyFrame(Duration.millis(200), e -> {
+                        fb.setIsResizing(false);
+                        fb.setCurrentTextVisible(true);
+                    })
+            );
 
-        move.setDelay(Duration.millis(250));
-        resize.play();
-        move.play();
+            move.setDelay(Duration.millis(150));
+            resize.play();
+            move.play();
+        }
+        else {
+            fb.setCurrentTextVisible(true);
+        }
     }
 
 
@@ -444,5 +453,16 @@ public class Main extends Application {
             }
         }
         player.movePlayer(buttons[currentSelectedButton].getTextX(currentSelectedInteraction, player.getWidth()), buttons[currentSelectedButton].getTextY(currentSelectedInteraction, player.getHeight()));
+    }
+
+
+
+    public void finishPlayerMove() {
+        player.setState("normal");
+        interactiveButton.wentIntoButton = false;
+        deselectButtons();
+        buttons[currentSelectedButton].hideOptions();
+        player.movePlayer(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5);
+        fb.setCurrentTextVisible(false);
     }
 }
