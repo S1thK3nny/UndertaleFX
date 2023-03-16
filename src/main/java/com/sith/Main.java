@@ -107,14 +107,25 @@ public class Main extends Application {
             keysPressed.add(event.getCode().toString());
 
             if(keysPressed.contains("D") && player.getState().equals("menu")) {
-                selectButton(true);
+                if(!interactiveButton.wentIntoButton) {
+                    selectButton(true);
+                }
             }
             else if(keysPressed.contains("A") && player.getState().equals("menu")) {
-                selectButton(false);
+                if(!interactiveButton.wentIntoButton) {
+                    selectButton(false);
+                }
             }
 
             if (keysPressed.contains("Z")) {
-                player.drawCollision();
+                //player.drawCollision();
+                if(!interactiveButton.wentIntoButton) {
+                    buttons[currentSelectedButton].interact();
+                    interactiveButton.wentIntoButton = true;
+                }
+            }
+            else if(keysPressed.contains("X") && interactiveButton.wentIntoButton) {
+                interactiveButton.wentIntoButton = false;
             }
             else if(keysPressed.contains("W")) {
                 if(!wTimer && !player.isJumping) {
@@ -132,6 +143,7 @@ public class Main extends Application {
                     currentSelectedButton = 0;
                     player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth()/3, horizontalButtonAlignment.getLayoutY());
                     buttons[currentSelectedButton].select(buttons);
+
                 }
                 else {
                     player.setState("normal");
@@ -286,7 +298,7 @@ public class Main extends Application {
 
     public void selectButton(boolean goRight) {
         if(goRight) {
-            if(currentSelectedButton >= 3) return;
+            if(currentSelectedButton >= buttons.length-1) return;
             ++currentSelectedButton;
         }
         else {
@@ -302,6 +314,8 @@ public class Main extends Application {
         player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth()/3 + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getLayoutX(), horizontalButtonAlignment.getLayoutY());
         buttons[currentSelectedButton].select(buttons);
     }
+
+
 
     public void deselectButtons() {
         for(interactiveButton b : buttons) {

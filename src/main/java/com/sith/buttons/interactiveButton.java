@@ -6,7 +6,8 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 
 public abstract class interactiveButton extends Rectangle {
-    private boolean selected = false;
+    public static boolean wentIntoButton = false;
+    protected boolean selected = false;
     Image buttonSelected;
     Image buttonNotSelected;
 
@@ -20,10 +21,6 @@ public abstract class interactiveButton extends Rectangle {
 
         this.setScaleX(2.75);
         this.setScaleY(2.75);
-    }
-
-    public boolean isSelected() {
-        return selected;
     }
 
     public void setSelected(boolean selected) {

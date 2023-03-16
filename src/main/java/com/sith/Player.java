@@ -24,7 +24,7 @@ public class Player extends Rectangle {
     boolean invincible = false;
 
     private final String name = "CHARA";
-    private final int LV = 1;
+    private final int LV = 19;
     private final int maxHealth;
     private int curHealth;
 
