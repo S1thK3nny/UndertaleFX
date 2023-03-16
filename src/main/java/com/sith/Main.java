@@ -31,6 +31,11 @@ public class Main extends Application {
     static Text curAndMaxHealth;
     public static FightingBox fb;
 
+    double fbWidth;
+    double fbHeight;
+    double fbX;
+    double fbY;
+
     Projectile test;
     Player player;
 
@@ -65,9 +70,11 @@ public class Main extends Application {
 
 
         //fb start
-        double fbWidth = scene.getWidth()/2 + scene.getWidth()/4;
-        double fbHeight = scene.getHeight()/2 - scene.getWidth()/10;
-        fb = new FightingBox(scene.getWidth()/2 - fbWidth/2, scene.getHeight()/2 - fbHeight/4, fbWidth, fbHeight);
+        fbWidth = scene.getWidth()/2 + scene.getWidth()/4;
+        fbHeight = scene.getHeight()/2 - scene.getWidth()/10;
+        fbX = scene.getWidth()/2 - fbWidth/2;
+        fbY = scene.getHeight()/2 - fbHeight/4;
+        fb = new FightingBox(fbX, fbY, fbWidth, fbHeight);
         //fb end
 
         //player start
@@ -152,7 +159,7 @@ public class Main extends Application {
                     movePlayerToButton(currentSelectedButton);
                     buttons[currentSelectedButton].select(buttons);
                     timeline.stop();
-
+                    resetFB();
                 }
                 else {
                     player.setState("normal");
@@ -235,6 +242,15 @@ public class Main extends Application {
             }
         }.start();
         // start animation timer to update everything necessary end
+    }
+
+
+
+    public void resetFB() {
+        fb.setWidth(fbWidth);
+        fb.setHeight(fbHeight);
+        fb.setX(fbX);
+        fb.setY(fbY);
     }
 
 
