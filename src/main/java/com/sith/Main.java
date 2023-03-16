@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -84,7 +85,7 @@ public class Main extends Application {
 
         //Health start
         curAndMaxHealth = new Text(player.getCurHealth()+"/"+player.getMaxHealth());
-        healthBar = new Rectangle(scene.getWidth()/2, curAndMaxHealth.getY(), player.getMaxHealth(), 15);
+        healthBar = new Rectangle(scene.getWidth()/2, curAndMaxHealth.getY(), player.getMaxHealth()*3, 15*3);
         lostHealthBar = new Rectangle(healthBar.getX(), healthBar.getY(), healthBar.getWidth(), healthBar.getHeight());
         underFB = new HBox(); //We need an HBox to keep all elements under the fb aligned (health, hp values, name, etc)
         configureUnderFBStuff();
@@ -95,7 +96,7 @@ public class Main extends Application {
         addButtons();
         //Buttons end
 
-        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, buttons[1].getOptions(), buttons[3].getOptions());
+        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions());
 
         //Window stuff start
         primaryStage.setScene(scene);
@@ -187,9 +188,11 @@ public class Main extends Application {
                 if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
                     buttons[currentSelectedButton].interact();
                     interactiveButton.wentIntoButton = true;
+                    fb.stopTextTimeline();
+                    fb.setCurrentTextVisible(false);
                     //Yes, this excludes the fight button.
                     if(currentSelectedButton>0) {
-                        player.movePlayer(buttons[currentSelectedButton].getTextX(0), buttons[currentSelectedButton].getTextY(0));
+                        player.movePlayer(buttons[currentSelectedButton].getTextX(0, player.getWidth()), buttons[currentSelectedButton].getTextY(0, player.getHeight()));
                         currentSelectedInteraction = 0;
                     }
                 }
@@ -198,6 +201,7 @@ public class Main extends Application {
                 interactiveButton.wentIntoButton = false;
                 buttons[currentSelectedButton].hideOptions();
                 movePlayerToButton(currentSelectedButton);
+                fb.setCurrentTextVisible(true);
             }
         });
 
@@ -270,7 +274,10 @@ public class Main extends Application {
                 new KeyFrame(Duration.millis(250),
                         new KeyValue(fb.xProperty(), fbX),
                         new KeyValue(fb.yProperty(), fbY)),
-                new KeyFrame(Duration.millis(250), e -> fb.setIsResizing(false))
+                new KeyFrame(Duration.millis(250), e -> {
+                    fb.setIsResizing(false);
+                    fb.setCurrentTextVisible(true);
+                })
         );
 
         move.setDelay(Duration.millis(250));
@@ -289,54 +296,49 @@ public class Main extends Application {
 
         Text HP = new Text("HP");
         configureText(HP);
-        //We need to run configureText first before actually resizing as it needs another scale
-        HP.setScaleX(2.35);
-        HP.setScaleY(1.75);
+        HP.setFont(globals.dtmSansHP);
+        HP.setTranslateY(HP.getTranslateY()+ (globals.dtmSans.getSize()-globals.dtmSansHP.getSize())/2 );
 
         //HP Values
         configureText(curAndMaxHealth);
 
         healthBar.setFill(Color.YELLOW);
-        healthBar.setScaleX(3);
-        healthBar.setScaleY(3);
 
         lostHealthBar.setFill(Color.DARKRED);
-        lostHealthBar.setScaleX(3);
-        lostHealthBar.setScaleY(3);
 
         //HBox for Health bars
         healthBars = new HBox();
-        healthBars.setSpacing(-player.getMaxHealth()); //Spacing must be minus the max health of the player so that it aligns over the yellow health bar
+        healthBars.setSpacing(-healthBar.getWidth()); //Spacing must be minus the max health of the player so that it aligns over the yellow health bar
         healthBars.getChildren().addAll(lostHealthBar, healthBar);
+        healthBars.setTranslateY(name.getY());
 
         /*
         We need two more HBoxes to have a proper section for the "HP", health bar and the actual HP values. This is the best way to align them and for them to not be affected by the underFB scaling.
          */
 
         HBox hbAndHPValues = new HBox();
-        hbAndHPValues.setSpacing(healthBar.getWidth() + curAndMaxHealth.getX() + curAndMaxHealth.getLayoutBounds().getWidth() + 10);
+        hbAndHPValues.setSpacing(curAndMaxHealth.getBoundsInLocal().getWidth()/3);
         hbAndHPValues.getChildren().addAll(healthBars, curAndMaxHealth);
         hbAndHPValues.setAlignment(Pos.BASELINE_CENTER);
 
         HBox completeHealthSection = new HBox();
-        completeHealthSection.setSpacing(50);
+        completeHealthSection.setSpacing(HP.getBoundsInLocal().getWidth()/5);
         completeHealthSection.getChildren().addAll(HP, hbAndHPValues);
 
 
 
         underFB.getChildren().addAll(name, LVL, completeHealthSection);
-        underFB.setLayoutX(fb.getX() + name.getBaselineOffset() + fb.getStrokeWidth()*2);
-        underFB.setLayoutY(fb.getHeight() + fb.getY() + fb.getStrokeWidth() + 35);
-        underFB.setSpacing(150);
+        underFB.setLayoutX(fb.getX() - fb.getStrokeWidth()/2);
+        underFB.setLayoutY(fb.getHeight() + fb.getY() + fb.getStrokeWidth());
+        underFB.setSpacing(100);
     }
 
 
 
     public static void configureText(Text t) {
         t.setFill(Color.WHITE);
-        t.setScaleX(2.75);
-        t.setScaleY(2.75);
         t.setFont(globals.dtmSans);
+        t.setTextAlignment(TextAlignment.LEFT);
     }
 
 
@@ -358,10 +360,14 @@ public class Main extends Application {
 
     public void addButtons() {
         horizontalButtonAlignment = new HBox();
+        horizontalButtonAlignment.setLayoutX(fb.getX() - fb.getStrokeWidth()/2);
+        horizontalButtonAlignment.setLayoutY(underFB.getLayoutY() + buttons[0].getHeight()/2 + healthBar.getHeight()/2);
+        horizontalButtonAlignment.setPrefWidth(fb.getWidth());
+        double spacing = (fb.getWidth() - (buttons[0].getWidth()*4)) / 3 + fb.getStrokeWidth()/4;
+        horizontalButtonAlignment.setSpacing(spacing);
         horizontalButtonAlignment.getChildren().addAll(buttons[0], buttons[1], buttons[2], buttons[3]);
-        horizontalButtonAlignment.setLayoutX(underFB.getLayoutX() + buttons[0].getWidth()/2 - fb.getStrokeWidth()/2 + 1.25);
-        horizontalButtonAlignment.setLayoutY(underFB.getLayoutY() + buttons[0].getHeight()*2 + healthBar.getHeight());
-        horizontalButtonAlignment.setSpacing(fb.getWidth()/9 + buttons[0].getWidth() + fb.getStrokeWidth()/4);
+
+
     }
 
 
@@ -397,7 +403,7 @@ public class Main extends Application {
 
     public void movePlayerToButton(int buttonID) {
         //You want advice? Don't touch this ever again.
-        player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(buttonID).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(buttonID).getBoundsInLocal().getWidth()/3 + horizontalButtonAlignment.getChildren().get(buttonID).getLayoutX(), horizontalButtonAlignment.getLayoutY());
+        player.movePlayer(buttons[buttonID].getLayoutX() + buttons[buttonID].getWidth()/6.5 - player.getWidth()/2 + horizontalButtonAlignment.getLayoutX(), horizontalButtonAlignment.getLayoutY() + buttons[0].getHeight()/2 - player.getHeight()/2);
 
     }
 
@@ -405,38 +411,38 @@ public class Main extends Application {
     public void selectInteraction(String direction) {
         switch (direction) {
             case "up" -> {
-                if(currentSelectedInteraction>=2 && buttons[currentSelectedButton].getText(currentSelectedInteraction-2).isVisible()) {
+                if(currentSelectedInteraction>=2) {
                     globals.switchCurrentElementSound.play();
                     currentSelectedInteraction-=2;
                 }
-                else if(currentSelectedInteraction>=1  && buttons[currentSelectedButton].getText(currentSelectedInteraction-1).isVisible()) {
+                else if(currentSelectedInteraction>=1) {
                     globals.switchCurrentElementSound.play();
                     --currentSelectedInteraction;
                 }
             }
             case "left" -> {
-                if(currentSelectedInteraction>0  && buttons[currentSelectedButton].getText(currentSelectedInteraction-1).isVisible()) {
+                if(currentSelectedInteraction>0) {
                     --currentSelectedInteraction;
                     globals.switchCurrentElementSound.play();
                 }
             }
             case "down" -> {
-                if(currentSelectedInteraction+2 < buttons[currentSelectedButton].getTexts().size()  && buttons[currentSelectedButton].getText(currentSelectedInteraction+2).isVisible()) {
+                if(currentSelectedInteraction+2 < buttons[currentSelectedButton].getTexts().size()) {
                     globals.switchCurrentElementSound.play();
                     currentSelectedInteraction+=2;
                 }
-                else if(currentSelectedInteraction+1 < buttons[currentSelectedButton].getTexts().size()  && buttons[currentSelectedButton].getText(currentSelectedInteraction+1).isVisible()) {
+                else if(currentSelectedInteraction+1 < buttons[currentSelectedButton].getTexts().size()) {
                     globals.switchCurrentElementSound.play();
                     ++currentSelectedInteraction;
                 }
             }
             case "right" -> {
-                if(currentSelectedInteraction<buttons[currentSelectedButton].getTexts().size()-1  && buttons[currentSelectedButton].getText(currentSelectedInteraction+1).isVisible()) {
+                if(currentSelectedInteraction<buttons[currentSelectedButton].getTexts().size()-1 ) {
                     globals.switchCurrentElementSound.play();
                     ++currentSelectedInteraction;
                 }
             }
         }
-        player.movePlayer(buttons[currentSelectedButton].getTextX(currentSelectedInteraction), buttons[currentSelectedButton].getTextY(currentSelectedInteraction));
+        player.movePlayer(buttons[currentSelectedButton].getTextX(currentSelectedInteraction, player.getWidth()), buttons[currentSelectedButton].getTextY(currentSelectedInteraction, player.getHeight()));
     }
 }

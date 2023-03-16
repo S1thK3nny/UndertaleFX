@@ -2,7 +2,6 @@ package com.sith.buttons;
 
 import com.sith.Main;
 import com.sith.globals;
-import javafx.geometry.Pos;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -15,36 +14,33 @@ import java.util.ArrayList;
 public abstract class interactiveButton extends Rectangle {
     public static boolean wentIntoButton = false;
     protected boolean selected = false;
-    protected VBox options;
-    protected HBox firstRow = new HBox();
-    protected HBox secondRow = new HBox();
+    protected HBox options;
+    protected VBox firstRow = new VBox();
+    protected VBox secondRow = new VBox();
     Image buttonSelected;
     Image buttonNotSelected;
     protected ArrayList<Text> texts = new ArrayList<>();
+    Text t;
 
     public interactiveButton(Image buttonNotSelected, Image buttonSelected) {
         this.buttonNotSelected = buttonNotSelected;
         this.buttonSelected = buttonSelected;
         this.setFill(new ImagePattern(buttonNotSelected));
 
-        this.setWidth(buttonNotSelected.getWidth());
-        this.setHeight(buttonNotSelected.getHeight());
+        this.setWidth(buttonNotSelected.getWidth() * 2.75);
+        this.setHeight(buttonNotSelected.getHeight() * 2.75);
 
-        this.setScaleX(2.75);
-        this.setScaleY(2.75);
+        t = new Text("* Test");
+        Main.configureText(t);
 
-        options = new VBox();
+        options = new HBox();
 
-        firstRow.setAlignment(Pos.BASELINE_LEFT);
-        secondRow.setAlignment(Pos.BASELINE_LEFT);
-
-        options.setAlignment(Pos.BASELINE_LEFT);
         options.getChildren().addAll(firstRow, secondRow);
         options.setVisible(false);
 
-        options.setSpacing(Main.fb.getHeight()/6);
-        firstRow.setSpacing(0);
-        secondRow.setSpacing(0);
+        options.setSpacing(Main.fb.getWidth()/2.5);
+        firstRow.setSpacing(Main.fb.getStrokeWidth()/2);
+        secondRow.setSpacing(Main.fb.getStrokeWidth()/2);
     }
 
     public void setSelected(boolean selected) {
@@ -70,12 +66,12 @@ public abstract class interactiveButton extends Rectangle {
 
     public void interact() {
         globals.buttonConfirmSound.play();
-        options.setLayoutX(Main.fb.getX() + Main.fb.getWidth()/2 - options.getWidth()/2);
-        options.setLayoutY(Main.fb.getY() + Main.fb.getHeight()/8);
+        options.setTranslateX(Main.fb.getX()*1.5 - Main.fb.getStrokeWidth());
+        options.setTranslateY(Main.fb.getY() + t.getBoundsInLocal().getHeight()/2 - Main.fb.getStrokeWidth());
         options.setVisible(true);
     }
 
-    public VBox getOptions() {
+    public HBox getOptions() {
         return options;
     }
 
@@ -84,18 +80,9 @@ public abstract class interactiveButton extends Rectangle {
     }
 
     protected void configureText(double playerWidth) {
-        int id = 1;
-        playerWidth *= 1.5;
         for(Text text: texts) {
             Main.configureText(text);
-            text.setWrappingWidth(125);
-            if(id%2==0) {
-                text.setTranslateX(text.getTranslateX() - Main.fb.getWidth()/2 + Main.fb.getX() + text.getBoundsInLocal().getCenterX() + Main.fb.getWidth()*1/3 + playerWidth);
-            }
-            else {
-                text.setTranslateX(text.getTranslateX() - Main.fb.getWidth()/2 + Main.fb.getX() + text.getBoundsInLocal().getCenterX() + playerWidth);
-            }
-            ++id;
+            text.setTranslateX(text.getTranslateX() + playerWidth + Main.fb.getStrokeWidth());
         }
     }
 
@@ -107,15 +94,16 @@ public abstract class interactiveButton extends Rectangle {
         return texts.get(i);
     }
 
-    public double getTextX(int i) {
+    public double getTextX(int i, double playerWidth) {
         if(i>texts.size() || i<0) return 0;
-        if((i+1)%2==0) return Main.fb.getX() + texts.get(i).getBoundsInLocal().getCenterX() + Main.fb.getWidth()*1/3 + texts.get(i).getLayoutX();
-        return Main.fb.getX() + texts.get(i).getBoundsInLocal().getCenterX();
+        //I swear to god, this HAS TO BE 0!!! DO NOT CHANGE IT!
+        return texts.get(0).getBoundsInLocal().getCenterX() + Main.fb.getX() + texts.get(i).getParent().getLayoutX() - playerWidth/2;
     }
 
-    public double getTextY(int i) {
+    public double getTextY(int i, double playerHeight) {
         if(i>texts.size() || i<0) return 0;
         //IT TOOK ME HALF AN HOUR TO COME UP WITH THIS; DO NOT EVER MESS WITH THIS AGAIN
-        return Main.fb.getY() + texts.get(i).getLayoutY() + texts.get(i).getParent().getLayoutY() + texts.get(i).getParent().getBoundsInLocal().getCenterY();
+        //return Main.fb.getY() + texts.get(i).getLayoutY() + texts.get(i).getParent().getLayoutY() + texts.get(i).getParent().getBoundsInLocal().getCenterY();
+        return Main.fb.getY() + texts.get(i).getLayoutY() - playerHeight/2;
     }
 }

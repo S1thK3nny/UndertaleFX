@@ -23,8 +23,8 @@ public class actButton extends interactiveButton {
 
         configureText(playerWidth);
 
-        firstRow.getChildren().addAll(t,t1);
-        secondRow.getChildren().addAll(t2, t3);
+        firstRow.getChildren().addAll(t,t2);
+        secondRow.getChildren().addAll(t1, t3);
     }
 
     @Override
