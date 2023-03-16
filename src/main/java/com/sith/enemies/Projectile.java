@@ -10,7 +10,7 @@ import java.util.List;
 public class Projectile extends Rectangle {
 
     List<Projectile> projectiles;
-    private final double MOVE_AMOUNT = 3;
+    protected final double MOVE_AMOUNT = 3;
 
     public Projectile(List<Projectile> projectiles, Pane root, FightingBox box, double y, double width, double height) {
         super((box.getX() + ((box.getWidth()-width) * Math.random())), y, width, height);

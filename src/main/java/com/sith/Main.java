@@ -13,15 +13,15 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.*;
 
 public class Main extends Application {
-    interactiveButton[] buttons = {new attackButton(), new actButton(), new itemButton(), new mercyButton()};
-    int currentSelectedButton = 0;
+    interactiveButton[] buttons;
+    int currentSelectedButton = -1;
+    int currentSelectedInteraction = 0;
 
     boolean atTopBorder = false;
     boolean atBottomBorder = false;
@@ -29,7 +29,7 @@ public class Main extends Application {
     boolean atRightBorder = false;
 
     static Text curAndMaxHealth;
-    FightingBox fb;
+    public static FightingBox fb;
 
     Projectile test;
     Player player;
@@ -83,10 +83,11 @@ public class Main extends Application {
         //Health end
 
         //Buttons start
+        buttons = new interactiveButton[]{new attackButton(), new actButton(player.getWidth()), new itemButton(), new mercyButton(player.getWidth())}; //Need to declare them here so that the FB is ready
         addButtons();
         //Buttons end
 
-        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb);
+        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, buttons[1].getOptions(), buttons[3].getOptions());
 
         //Window stuff start
         primaryStage.setScene(scene);
@@ -105,29 +106,36 @@ public class Main extends Application {
         //OnKey start
         scene.setOnKeyPressed(event -> {
             keysPressed.add(event.getCode().toString());
+            if(player.getState().equals("menu")) {
+                if(keysPressed.contains("D")) {
+                    if(!interactiveButton.wentIntoButton) {
+                        selectButton(true);
+                    }
+                    else {
+                        selectInteraction("right");
+                    }
+                }
+                else if(keysPressed.contains("A")) {
+                    if(!interactiveButton.wentIntoButton) {
+                        selectButton(false);
+                    }
+                    else {
+                        selectInteraction("left");
+                    }
+                }
+                else if(keysPressed.contains("W")) {
+                    if(interactiveButton.wentIntoButton) {
+                        selectInteraction("up");
+                    }
+                }
+                else if(keysPressed.contains("S")) {
+                    if(interactiveButton.wentIntoButton) {
+                        selectInteraction("down");
+                    }
+                }
+            }
 
-            if(keysPressed.contains("D") && player.getState().equals("menu")) {
-                if(!interactiveButton.wentIntoButton) {
-                    selectButton(true);
-                }
-            }
-            else if(keysPressed.contains("A") && player.getState().equals("menu")) {
-                if(!interactiveButton.wentIntoButton) {
-                    selectButton(false);
-                }
-            }
-
-            if (keysPressed.contains("Z")) {
-                //player.drawCollision();
-                if(!interactiveButton.wentIntoButton) {
-                    buttons[currentSelectedButton].interact();
-                    interactiveButton.wentIntoButton = true;
-                }
-            }
-            else if(keysPressed.contains("X") && interactiveButton.wentIntoButton) {
-                interactiveButton.wentIntoButton = false;
-            }
-            else if(keysPressed.contains("W")) {
+            if(keysPressed.contains("W") && player.getState().equals("gravity")) {
                 if(!wTimer && !player.isJumping) {
                     wTimer = true;
                     Timeline wTimeline = new Timeline(
@@ -141,13 +149,15 @@ public class Main extends Application {
                     //player.setState("gravity");
                     player.setState("menu");
                     currentSelectedButton = 0;
-                    player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth()/3, horizontalButtonAlignment.getLayoutY());
+                    movePlayerToButton(currentSelectedButton);
                     buttons[currentSelectedButton].select(buttons);
 
                 }
                 else {
                     player.setState("normal");
+                    interactiveButton.wentIntoButton = false;
                     deselectButtons();
+                    buttons[currentSelectedButton].hideOptions();
                     player.movePlayer(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5);
                 }
             }
@@ -160,6 +170,25 @@ public class Main extends Application {
                     timeline.play();
                 }
                 throwProjectiles = !throwProjectiles;
+            }
+
+
+            if (keysPressed.contains("Z")) {
+                //player.drawCollision();
+                if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
+                    buttons[currentSelectedButton].interact();
+                    interactiveButton.wentIntoButton = true;
+                    //Yes, this excludes the fight button.
+                    if(currentSelectedButton>0) {
+                        player.movePlayer(buttons[currentSelectedButton].getTextX(0), buttons[currentSelectedButton].getTextY(0));
+                        currentSelectedInteraction = 0;
+                    }
+                }
+            }
+            else if(keysPressed.contains("X") && interactiveButton.wentIntoButton) {
+                interactiveButton.wentIntoButton = false;
+                buttons[currentSelectedButton].hideOptions();
+                movePlayerToButton(currentSelectedButton);
             }
         });
 
@@ -261,12 +290,11 @@ public class Main extends Application {
 
 
 
-    public void configureText(Text t) {
+    public static void configureText(Text t) {
         t.setFill(Color.WHITE);
         t.setScaleX(2.75);
         t.setScaleY(2.75);
         t.setFont(globals.dtmSans);
-        t.setTextAlignment(TextAlignment.RIGHT);
     }
 
 
@@ -311,7 +339,7 @@ public class Main extends Application {
         We get the X position of the horizontalButtonAlignment, subtract the width of the button, so we are at the start of it, and then we add 1/3 of it to be in the position before the text.
         However, since we have multiple buttons, we need to account for each position. Luckily for button 0, that would be 0 so everything fits perfectly.
          */
-        player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getBoundsInLocal().getWidth()/3 + horizontalButtonAlignment.getChildren().get(currentSelectedButton).getLayoutX(), horizontalButtonAlignment.getLayoutY());
+        movePlayerToButton(currentSelectedButton);
         buttons[currentSelectedButton].select(buttons);
     }
 
@@ -321,5 +349,42 @@ public class Main extends Application {
         for(interactiveButton b : buttons) {
             b.setSelected(false);
         }
+    }
+
+
+
+    public void movePlayerToButton(int buttonID) {
+        //You want advice? Don't touch this ever again.
+        player.movePlayer(horizontalButtonAlignment.getLayoutX() - horizontalButtonAlignment.getChildren().get(buttonID).getBoundsInLocal().getWidth() + horizontalButtonAlignment.getChildren().get(buttonID).getBoundsInLocal().getWidth()/3 + horizontalButtonAlignment.getChildren().get(buttonID).getLayoutX(), horizontalButtonAlignment.getLayoutY());
+
+    }
+
+
+    public void selectInteraction(String direction) {
+        switch (direction) {
+            case "up" -> {
+                if(currentSelectedInteraction>=2 && buttons[currentSelectedButton].getText(currentSelectedInteraction-2).isVisible()) {
+                    currentSelectedInteraction-=2;
+                }
+                else if(currentSelectedInteraction>=1  && buttons[currentSelectedButton].getText(currentSelectedInteraction-1).isVisible()) {
+                    --currentSelectedInteraction;
+                }
+            }
+            case "left" -> {
+                if(currentSelectedInteraction>0  && buttons[currentSelectedButton].getText(currentSelectedInteraction-1).isVisible()) --currentSelectedInteraction;
+            }
+            case "down" -> {
+                if(currentSelectedInteraction+2 < buttons[currentSelectedButton].getTexts().size()  && buttons[currentSelectedButton].getText(currentSelectedInteraction+2).isVisible()) {
+                    currentSelectedInteraction+=2;
+                }
+                else if(currentSelectedInteraction+1 < buttons[currentSelectedButton].getTexts().size()  && buttons[currentSelectedButton].getText(currentSelectedInteraction+1).isVisible()) {
+                    ++currentSelectedInteraction;
+                }
+            }
+            case "right" -> {
+                if(currentSelectedInteraction<buttons[currentSelectedButton].getTexts().size()-1  && buttons[currentSelectedButton].getText(currentSelectedInteraction+1).isVisible()) ++currentSelectedInteraction;
+            }
+        }
+        player.movePlayer(buttons[currentSelectedButton].getTextX(currentSelectedInteraction), buttons[currentSelectedButton].getTextY(currentSelectedInteraction));
     }
 }
