@@ -80,4 +80,8 @@ public class FightingBox extends Rectangle {
     public boolean getIsResizing() {
         return isResizing;
     }
+
+    public void setIsResizing(boolean isResizing) {
+        this.isResizing = isResizing;
+    }
 }

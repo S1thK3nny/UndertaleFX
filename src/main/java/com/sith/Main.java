@@ -4,6 +4,7 @@ import com.sith.buttons.*;
 import com.sith.enemies.Projectile;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -181,7 +182,7 @@ public class Main extends Application {
             }
 
 
-            if (keysPressed.contains("Z")) {
+            if (keysPressed.contains("Z") && !fb.getIsResizing()) {
                 //player.drawCollision();
                 if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
                     buttons[currentSelectedButton].interact();
@@ -246,11 +247,35 @@ public class Main extends Application {
 
 
 
+    //We're using a timeline to make it look like an animation
     public void resetFB() {
-        fb.setWidth(fbWidth);
-        fb.setHeight(fbHeight);
-        fb.setX(fbX);
-        fb.setY(fbY);
+        fb.setIsResizing(true);
+        Timeline resize = new Timeline();
+        Timeline move = new Timeline();
+
+        resize.getKeyFrames().addAll(
+                new KeyFrame(Duration.millis(0),
+                        new KeyValue(fb.widthProperty(), fb.getWidth()),
+                        new KeyValue(fb.heightProperty(), fb.getHeight())),
+                new KeyFrame(Duration.millis(275),
+                        new KeyValue(fb.widthProperty(), fbWidth),
+                        new KeyValue(fb.heightProperty(), fbHeight))
+
+        );
+
+        move.getKeyFrames().addAll(
+                new KeyFrame(Duration.millis(0),
+                        new KeyValue(fb.xProperty(), fb.getX()),
+                        new KeyValue(fb.yProperty(), fb.getY())),
+                new KeyFrame(Duration.millis(250),
+                        new KeyValue(fb.xProperty(), fbX),
+                        new KeyValue(fb.yProperty(), fbY)),
+                new KeyFrame(Duration.millis(250), e -> fb.setIsResizing(false))
+        );
+
+        move.setDelay(Duration.millis(250));
+        resize.play();
+        move.play();
     }
 
 
