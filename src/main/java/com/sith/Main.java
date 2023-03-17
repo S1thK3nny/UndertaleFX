@@ -355,13 +355,12 @@ public class Main extends Application {
     public static void setHealthText(int curHealth, int maxHealth, int damageTaken) {
         curAndMaxHealth.setText(curHealth+"/"+maxHealth);
 
-        //Decrease width, retain position
-        healthBar.setWidth(healthBar.getWidth() - damageTaken);
-        healthBar.setTranslateX(healthBar.getTranslateX() - damageTaken);
+        //Decrease width, retain position. Need to accommodate for the width and height that we multiplied by 3. I still hate scaling...
+        healthBar.setWidth(healthBar.getWidth() - damageTaken*3);
 
         //This lets the HP values stay in place. We do not want it to keep translating once the health bar is gone
         if(curHealth>=0) {
-            curAndMaxHealth.setTranslateX(curAndMaxHealth.getTranslateX() + damageTaken);
+            curAndMaxHealth.setTranslateX(curAndMaxHealth.getTranslateX() + damageTaken*3);
         }
     }
 
