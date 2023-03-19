@@ -64,4 +64,8 @@ public class itemButton extends interactiveButton {
         secondRow.getChildren().clear();
         addToRow();
     }
+
+    public boolean noItemsLeft() {
+        return items.size()<=0;
+    }
 }

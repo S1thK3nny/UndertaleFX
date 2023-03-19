@@ -92,7 +92,9 @@ public class Main extends Application {
         //Health end
 
         //Buttons start
-        buttons = new interactiveButton[]{new attackButton(), new actButton(player.getWidth()), new itemButton(player), new mercyButton(player.getWidth())}; //Need to declare them here so that the FB is ready
+        //This is ugly, I know. However, we have to do this so that we can call itemButton.noItemsLeft() later
+        itemButton itemButton = new itemButton(player);
+        buttons = new interactiveButton[]{new attackButton(), new actButton(player.getWidth()), itemButton, new mercyButton(player.getWidth())}; //Need to declare them here so that the FB is ready
         addButtons();
         //Buttons end
 
@@ -145,7 +147,12 @@ public class Main extends Application {
 
                 if (keysPressed.contains("Z") && !fb.getIsResizing()) {
                     //player.drawCollision();
-                    if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
+
+                    //If you have no items left and try to use the item button
+                    if(!interactiveButton.wentIntoButton && currentSelectedButton==2 && itemButton.noItemsLeft()) {
+                        globals.buttonConfirmSound.play();
+                    }
+                    else if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
                         buttons[currentSelectedButton].openButton();
                         interactiveButton.wentIntoButton = true;
                         fb.setCurrentTextVisible(false);
