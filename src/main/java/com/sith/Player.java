@@ -6,7 +6,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import java.util.HashSet;
+
+import static com.sith.Main.userInputTop;
+import static com.sith.Main.userInputLeft;
+import static com.sith.Main.userInputDown;
+import static com.sith.Main.userInputRight;
+import static com.sith.Main.userInputBack;
 
 public class Player extends Rectangle {
     Rectangle collisionBox;
@@ -24,7 +29,7 @@ public class Player extends Rectangle {
     boolean invincible = false;
 
     private final String name = "CHARA";
-    private final int LV = 7;
+    private final int LV = 19;
     private final int maxHealth;
     private int curHealth;
 
@@ -45,42 +50,41 @@ public class Player extends Rectangle {
         curHealth = maxHealth;
     }
 
-    public void updatePosition(double sceneWidth, double sceneHeight, HashSet<String> keysPressed, Boolean[] borders, boolean wTimer) {
-        boolean isShiftPressed = keysPressed.contains("SHIFT");
+    public void updatePosition(double sceneWidth, double sceneHeight, Boolean[] borders, boolean wTimer) {
         double vy;
         double vx;
 
         // update velocity based on which keys are pressed
 
-        if (keysPressed.contains("W") && !borders[2] && state.equals("normal")) {
+        if (userInputTop() && !borders[2] && state.equals("normal")) {
             vy = -MOVE_AMOUNT;
-        } else if (keysPressed.contains("S") && !borders[3]) {
+        } else if (userInputDown() && !borders[3]) {
             vy = MOVE_AMOUNT;
         } else {
             vy = 0;
         }
 
         // horizontal velocity
-        if (keysPressed.contains("A") && !borders[0]) {
+        if (userInputLeft() && !borders[0]) {
             vx = -MOVE_AMOUNT;
-        } else if (keysPressed.contains("D") && !borders[1]) {
+        } else if (userInputRight() && !borders[1]) {
             vx = MOVE_AMOUNT;
         } else {
             vx = 0;
         }
 
-        if(isShiftPressed) {
+        if(userInputBack()) {
             vy /= 2;
             vx /= 2;
         }
 
         if(state.equals("gravity")) {
             if(borders[2]) wTimer = false;
-            if(keysPressed.contains("W") && !borders[2] && !isJumping && wTimer) {
+            if(userInputTop() && !borders[2] && !isJumping && wTimer) {
                 vy = -GRAVITY_AMOUNT;
             }
 
-            if(!borders[3] && !keysPressed.contains("W") || (!borders[3] && !wTimer)) {
+            if(!borders[3] && !userInputTop() || (!borders[3] && !wTimer)) {
                 vy = GRAVITY_AMOUNT;
                 isJumping = true;
             }
@@ -92,10 +96,10 @@ public class Player extends Rectangle {
         collisionBox.setX(getX());
         collisionBox.setY(getY());
 
-        if(!keysPressed.contains("W") && !keysPressed.contains("A") && !keysPressed.contains("S") && !keysPressed.contains("D")) {
+        if(!(userInputTop() && userInputLeft() && userInputDown() && userInputRight())) {
             isMoving = false;
         }
-        else if(keysPressed.contains("W") || keysPressed.contains("A") || keysPressed.contains("S") || keysPressed.contains("D")) {
+        else if(userInputTop() || userInputLeft() || userInputDown() || userInputRight()) {
             isMoving = true;
         }
 
@@ -139,6 +143,13 @@ public class Player extends Rectangle {
     }
 
     public void setState(String state) {
+        /*
+        Known states:
+        - normal
+        - gravity
+        - gone
+        - menu
+         */
         switch (state) {
             case "normal", default -> {
                 setFill(new ImagePattern(globals.redHeart));
@@ -175,7 +186,7 @@ public class Player extends Rectangle {
 
     public void setCurHealth(int damage, boolean gotHit) {
         this.curHealth -= damage;
-        Main.setHealthText(curHealth, maxHealth, damage);
+        Main.setHealthText(curHealth, maxHealth, damage, true);
         if(gotHit) {
             globals.hurtSound.play();
             hitEffect();
@@ -200,5 +211,16 @@ public class Player extends Rectangle {
         setY(y);
         collisionBox.setX(x);
         collisionBox.setY(y);
+    }
+
+    public void healPlayer(int healpoints) {
+        if(curHealth+healpoints<maxHealth) {
+            curHealth+=healpoints;
+        }
+        else {
+            curHealth = maxHealth;
+        }
+        globals.healSound.play();
+        Main.setHealthText(curHealth, maxHealth, healpoints, false);
     }
 }

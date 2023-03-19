@@ -38,9 +38,11 @@ public abstract class interactiveButton extends Rectangle {
         options.getChildren().addAll(firstRow, secondRow);
         options.setVisible(false);
 
-        options.setSpacing(Main.fb.getWidth()/2.5);
+        options.setSpacing(0);
         firstRow.setSpacing(Main.fb.getStrokeWidth()/2);
+        firstRow.setMinWidth(Main.fb.getWidth()/2);
         secondRow.setSpacing(Main.fb.getStrokeWidth()/2);
+        secondRow.setMinWidth(Main.fb.getWidth()/2);
     }
 
     public void setSelected(boolean selected) {
@@ -98,17 +100,11 @@ public abstract class interactiveButton extends Rectangle {
     public double getTextX(int i, double playerWidth) {
         if(i>texts.size() || i<0) return 0;
         //I swear to god, this HAS TO BE 0!!! DO NOT CHANGE IT!
-        return texts.get(0).getBoundsInLocal().getCenterX() + Main.fb.getX() + texts.get(i).getParent().getLayoutX() - playerWidth/2;
+        return texts.get(0).getTranslateX()*2 + Main.fb.getX() + texts.get(i).getParent().getLayoutX() - playerWidth/2;
     }
 
     public double getTextY(int i, double playerHeight) {
         if(i>texts.size() || i<0) return 0;
-        //IT TOOK ME HALF AN HOUR TO COME UP WITH THIS; DO NOT EVER MESS WITH THIS AGAIN
-        //return Main.fb.getY() + texts.get(i).getLayoutY() + texts.get(i).getParent().getLayoutY() + texts.get(i).getParent().getBoundsInLocal().getCenterY();
         return Main.fb.getY() + texts.get(i).getLayoutY() - playerHeight/2;
-    }
-
-    public String getUsed(int currentSelectedInteraction) {
-        return getTexts().get(currentSelectedInteraction).getText().substring(2);
     }
 }

@@ -41,15 +41,18 @@ public class Main extends Application {
     boolean wTimer = false;
     boolean throwProjectiles = false;
 
-    final HashSet<String> keysPressed = new HashSet<>();
+    static final HashSet<String> keysPressed = new HashSet<>();
     final List<Projectile> list= new ArrayList<>();
     final List<Projectile> projectiles = Collections.synchronizedList(list);
 
     static Rectangle healthBar;
     static Rectangle lostHealthBar;
+
     HBox underFB;
     HBox healthBars;
     HBox horizontalButtonAlignment;
+
+    Timeline projectileTimeline;
 
     public static void main(String[] args) {
         launch(args);
@@ -89,7 +92,7 @@ public class Main extends Application {
         //Health end
 
         //Buttons start
-        buttons = new interactiveButton[]{new attackButton(), new actButton(player.getWidth()), new itemButton(), new mercyButton(player.getWidth())}; //Need to declare them here so that the FB is ready
+        buttons = new interactiveButton[]{new attackButton(), new actButton(player.getWidth()), new itemButton(player), new mercyButton(player.getWidth())}; //Need to declare them here so that the FB is ready
         addButtons();
         //Buttons end
 
@@ -102,10 +105,10 @@ public class Main extends Application {
         primaryStage.getIcons().add(globals.redHeart);
         //Window stuff start
 
-        Timeline timeline = new Timeline(
+        projectileTimeline = new Timeline(
                 new KeyFrame(Duration.millis(150), e -> test = new Projectile(projectiles, root, fb, fb.getY(), 35, 50))
         );
-        timeline.setCycleCount(Timeline.INDEFINITE);
+        projectileTimeline.setCycleCount(Timeline.INDEFINITE);
 
 
 
@@ -113,7 +116,7 @@ public class Main extends Application {
         scene.setOnKeyPressed(event -> {
             keysPressed.add(event.getCode().toString());
             if(player.getState().equals("menu")) {
-                if(keysPressed.contains("D")) {
+                if(userInputRight()) {
                     if(!interactiveButton.wentIntoButton) {
                         selectButton(true);
                     }
@@ -121,7 +124,7 @@ public class Main extends Application {
                         selectInteraction("right");
                     }
                 }
-                else if(keysPressed.contains("A")) {
+                else if(userInputLeft()) {
                     if(!interactiveButton.wentIntoButton) {
                         selectButton(false);
                     }
@@ -129,12 +132,12 @@ public class Main extends Application {
                         selectInteraction("left");
                     }
                 }
-                else if(keysPressed.contains("W")) {
+                else if(userInputTop()) {
                     if(interactiveButton.wentIntoButton) {
                         selectInteraction("up");
                     }
                 }
-                else if(keysPressed.contains("S")) {
+                else if(userInputDown()) {
                     if(interactiveButton.wentIntoButton) {
                         selectInteraction("down");
                     }
@@ -148,8 +151,13 @@ public class Main extends Application {
                         fb.setCurrentTextVisible(false);
                         //Yes, this excludes the fight button.
                         if(currentSelectedButton>0) {
+                            //Moves player to the corresponding text
                             player.movePlayer(buttons[currentSelectedButton].getTextX(0, player.getWidth()), buttons[currentSelectedButton].getTextY(0, player.getHeight()));
                             currentSelectedInteraction = 0;
+                        }
+                        else {
+                            //Temp option if the player pressed fight
+                            finishPlayerMove();
                         }
                     }
                     else if(interactiveButton.wentIntoButton && currentSelectedButton>0) {
@@ -158,7 +166,7 @@ public class Main extends Application {
                         fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact(currentSelectedInteraction), player);
                     }
                 }
-                else if(keysPressed.contains("X") && interactiveButton.wentIntoButton) {
+                else if(keysPressed.contains("X") && interactiveButton.wentIntoButton && currentSelectedButton>0) {
                     interactiveButton.wentIntoButton = false;
                     buttons[currentSelectedButton].hideOptions();
                     movePlayerToButton(currentSelectedButton);
@@ -174,7 +182,7 @@ public class Main extends Application {
                 }
             }
 
-            if(keysPressed.contains("W") && player.getState().equals("gravity")) {
+            if(userInputTop() && player.getState().equals("gravity")) {
                 if(!wTimer && !player.isJumping) {
                     wTimer = true;
                     Timeline wTimeline = new Timeline(
@@ -186,12 +194,7 @@ public class Main extends Application {
             else if(keysPressed.contains("SPACE")) {
                 if(player.state.equals("normal")) {
                     //player.setState("gravity");
-                    player.setState("menu");
-                    currentSelectedButton = 0;
-                    movePlayerToButton(currentSelectedButton);
-                    buttons[currentSelectedButton].select(buttons);
-                    timeline.stop();
-                    resetFB();
+                    enterMenu();
                 }
                 else {
                     finishPlayerMove();
@@ -199,11 +202,11 @@ public class Main extends Application {
             }
             else if(keysPressed.contains("G")) {
                 if(throwProjectiles) {
-                    timeline.stop();
+                    projectileTimeline.stop();
 
                 }
                 if(!throwProjectiles) {
-                    timeline.play();
+                    projectileTimeline.play();
                 }
                 throwProjectiles = !throwProjectiles;
             }
@@ -225,7 +228,7 @@ public class Main extends Application {
                     //we need the /5 to get accurate sprite border stuff
 
                     Boolean[] borders = {atLeftBorder, atRightBorder, atTopBorder, atBottomBorder};
-                    player.updatePosition(scene.getWidth(), scene.getHeight(), keysPressed, borders, wTimer); //using scene.get to correspond to window size update
+                    player.updatePosition(scene.getWidth(), scene.getHeight(), borders, wTimer); //using scene.get to correspond to window size update
                     fb.updatePosition(scene.getWidth(), scene.getHeight(), keysPressed, player.getHeight(), player.getWidth());
                     player.checkBounds(fb, borders);
 
@@ -313,7 +316,7 @@ public class Main extends Application {
 
         healthBar.setFill(Color.YELLOW);
 
-        lostHealthBar.setFill(Color.DARKRED);
+        lostHealthBar.setFill(Color.RED);
 
         //HBox for Health bars
         healthBars = new HBox();
@@ -326,7 +329,7 @@ public class Main extends Application {
          */
 
         HBox hbAndHPValues = new HBox();
-        hbAndHPValues.setSpacing(curAndMaxHealth.getBoundsInLocal().getWidth()/3);
+        hbAndHPValues.setSpacing(curAndMaxHealth.getBoundsInLocal().getWidth()/4);
         hbAndHPValues.getChildren().addAll(healthBars, curAndMaxHealth);
         hbAndHPValues.setAlignment(Pos.BASELINE_CENTER);
 
@@ -352,15 +355,32 @@ public class Main extends Application {
 
 
 
-    public static void setHealthText(int curHealth, int maxHealth, int damageTaken) {
+    public static void setHealthText(int curHealth, int maxHealth, int damageOrHealthTaken, boolean isDamage) {
         curAndMaxHealth.setText(curHealth+"/"+maxHealth);
 
-        //Decrease width, retain position. Need to accommodate for the width and height that we multiplied by 3. I still hate scaling...
-        healthBar.setWidth(healthBar.getWidth() - damageTaken*3);
+        if(isDamage) {
+            //Decrease width, retain position. Need to accommodate for the width and height that we multiplied by 3. I still hate scaling...
+            healthBar.setWidth(healthBar.getWidth() - damageOrHealthTaken*3);
 
-        //This lets the HP values stay in place. We do not want it to keep translating once the health bar is gone
-        if(curHealth>=0) {
-            curAndMaxHealth.setTranslateX(curAndMaxHealth.getTranslateX() + damageTaken*3);
+            //This lets the HP values stay in place. We do not want it to keep translating once the health bar is gone
+            if(curHealth>=0) {
+                curAndMaxHealth.setTranslateX(curAndMaxHealth.getTranslateX() + damageOrHealthTaken*3);
+            }
+        }
+        else {
+            if(!(healthBar.getWidth()>=maxHealth*3)) {
+                if(!(healthBar.getWidth()+damageOrHealthTaken*3>=maxHealth*3)) {
+                    healthBar.setWidth(healthBar.getWidth() + damageOrHealthTaken*3);
+                }
+                else {
+                    healthBar.setWidth(maxHealth*3);
+                    curAndMaxHealth.setTranslateX(0);
+                }
+            }
+
+            if(curHealth<maxHealth) {
+                curAndMaxHealth.setTranslateX(curAndMaxHealth.getTranslateX() - damageOrHealthTaken*3);
+            }
         }
     }
 
@@ -389,12 +409,6 @@ public class Main extends Application {
             if(currentSelectedButton <= 0) return;
             --currentSelectedButton;
         }
-        /*
-        Ok...what does setX do here actually?
-        It is simple.
-        We get the X position of the horizontalButtonAlignment, subtract the width of the button, so we are at the start of it, and then we add 1/3 of it to be in the position before the text.
-        However, since we have multiple buttons, we need to account for each position. Luckily for button 0, that would be 0 so everything fits perfectly.
-         */
         movePlayerToButton(currentSelectedButton);
         buttons[currentSelectedButton].select(buttons);
     }
@@ -463,5 +477,34 @@ public class Main extends Application {
         buttons[currentSelectedButton].hideOptions();
         player.movePlayer(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5);
         fb.setCurrentTextVisible(false);
+    }
+
+    public void enterMenu() {
+        player.setState("menu");
+        currentSelectedButton = 0;
+        movePlayerToButton(currentSelectedButton);
+        buttons[currentSelectedButton].select(buttons);
+        projectileTimeline.stop();
+        resetFB();
+    }
+
+    public static boolean userInputTop() {
+        return keysPressed.contains("W") || keysPressed.contains("UP");
+    }
+
+    public static boolean userInputLeft() {
+        return keysPressed.contains("A") || keysPressed.contains("LEFT");
+    }
+
+    public static boolean userInputDown() {
+        return keysPressed.contains("S") || keysPressed.contains("DOWN");
+    }
+
+    public static boolean userInputRight() {
+        return keysPressed.contains("D") || keysPressed.contains("RIGHT");
+    }
+
+    public static boolean userInputBack() {
+        return keysPressed.contains("SHIFT") || keysPressed.contains("X");
     }
 }

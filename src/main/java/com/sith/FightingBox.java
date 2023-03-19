@@ -57,30 +57,30 @@ public class FightingBox extends Rectangle {
             isMoving = true;
         }
 
-        if(keysPressed.contains("UP")) {
+        if(keysPressed.contains("NUMPAD8")) {
             setHeight(getHeight()+2);
             setY(getY()-1);
         }
 
-        if(keysPressed.contains("DOWN") && getHeight()>(playerHeight + playerHeight/5)) {
+        if(keysPressed.contains("NUMPAD5") && getHeight()>(playerHeight + playerHeight/5)) {
             setHeight(getHeight()-2);
             setY(getY()+1);
         }
 
-        if(keysPressed.contains("LEFT")) {
+        if(keysPressed.contains("NUMPAD4")) {
             setWidth(getWidth()+2);
             setX(getX()-1);
         }
 
-        if(keysPressed.contains("RIGHT") && getWidth()>(playerWidth + playerWidth/5)) {
+        if(keysPressed.contains("NUMPAD6") && getWidth()>(playerWidth + playerWidth/5)) {
             setWidth(getWidth()-2);
             setX(getX()+1);
         }
 
-        if(!keysPressed.contains("UP") && !keysPressed.contains("DOWN") && !keysPressed.contains("LEFT") && !keysPressed.contains("RIGHT")) {
+        if(!keysPressed.contains("NUMPAD8") && !keysPressed.contains("NUMPAD5") && !keysPressed.contains("NUMPAD4") && !keysPressed.contains("NUMPAD6")) {
             isResizing = false;
         }
-        else if(keysPressed.contains("UP") || keysPressed.contains("DOWN") || keysPressed.contains("LEFT") || keysPressed.contains("RIGHT")) {
+        else if(keysPressed.contains("NUMPAD8") || keysPressed.contains("NUMPAD5") || keysPressed.contains("NUMPAD4") || keysPressed.contains("NUMPAD6")) {
             isResizing = true;
         }
     }
@@ -129,7 +129,7 @@ public class FightingBox extends Rectangle {
         index = 0;
         currentText.setText("");
         timeline = new Timeline(
-                new KeyFrame(Duration.millis(33), event -> {
+                new KeyFrame(Duration.millis(35), event -> {
                     typing = true;
                     currentText.setText(currentText.getText() + s.charAt(index));
                     ++index;
