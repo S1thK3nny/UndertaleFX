@@ -20,6 +20,7 @@ public abstract class interactiveButton extends Rectangle {
     Image buttonSelected;
     Image buttonNotSelected;
     protected ArrayList<Text> texts = new ArrayList<>();
+    int currentSelectedInteraction = 0;
     Text t;
 
     public interactiveButton(Image buttonNotSelected, Image buttonSelected) {
@@ -75,7 +76,7 @@ public abstract class interactiveButton extends Rectangle {
 
     public String interact(int currentSelectedInteraction) {
         globals.buttonConfirmSound.play();
-        return "Oh no...what happened here?!";
+        return "* Oh no...what happened here?!";
     }
 
     public HBox getOptions() {
@@ -93,6 +94,16 @@ public abstract class interactiveButton extends Rectangle {
         }
     }
 
+    protected void configurePageText(double playerWidth, Text t) {
+        Main.configureText(t);
+
+        //Need this in order to align it with the second row
+        Text temp = new Text("* ");
+        Main.configureText(temp);
+
+        t.setTranslateX(t.getTranslateX() + playerWidth + Main.fb.getStrokeWidth() + temp.getLayoutBounds().getWidth());
+    }
+
     public ArrayList<Text> getTexts() {
         return texts;
     }
@@ -107,4 +118,5 @@ public abstract class interactiveButton extends Rectangle {
         if(i>texts.size() || i<0) return 0;
         return Main.fb.getY() + texts.get(i).getLayoutY() - playerHeight/2;
     }
+
 }

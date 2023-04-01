@@ -118,32 +118,29 @@ public class Main extends Application {
         scene.setOnKeyPressed(event -> {
             keysPressed.add(event.getCode().toString());
             if(player.getState().equals("menu")) {
-                if(userInputRight()) {
-                    if(!interactiveButton.wentIntoButton) {
-                        selectButton(true);
-                    }
-                    else {
+                if(interactiveButton.wentIntoButton) {
+                    if(userInputRight()) {
                         selectInteraction("right");
                     }
-                }
-                else if(userInputLeft()) {
-                    if(!interactiveButton.wentIntoButton) {
-                        selectButton(false);
-                    }
-                    else {
+                    else if(userInputLeft()) {
                         selectInteraction("left");
                     }
-                }
-                else if(userInputTop()) {
-                    if(interactiveButton.wentIntoButton) {
+                    else if(userInputTop()) {
                         selectInteraction("up");
                     }
-                }
-                else if(userInputDown()) {
-                    if(interactiveButton.wentIntoButton) {
+                    else if(userInputDown()) {
                         selectInteraction("down");
                     }
                 }
+                else {
+                    if(userInputRight()) {
+                        selectButton(true);
+                    }
+                    else if(userInputLeft()) {
+                        selectButton(false);
+                    }
+                }
+
 
                 if (keysPressed.contains("Z") && !fb.getIsResizing()) {
                     //player.drawCollision();
@@ -180,6 +177,7 @@ public class Main extends Application {
                     fb.setCurrentTextVisible(true);
                 }
             }
+
             else if(player.getState().equals("gone")) {
                 if(keysPressed.contains("Z")) {
                     if(fb.hasFinishedDialog()) finishPlayerMove();
@@ -466,7 +464,7 @@ public class Main extends Application {
                 }
             }
             case "right" -> {
-                if(currentSelectedInteraction<buttons[currentSelectedButton].getTexts().size()-1 ) {
+                if(currentSelectedInteraction < buttons[currentSelectedButton].getTexts().size()-1 ) {
                     globals.switchCurrentElementSound.play();
                     ++currentSelectedInteraction;
                 }
