@@ -104,6 +104,7 @@ public abstract class interactiveButton extends Rectangle {
         Main.configureText(temp);
 
         t.setTranslateX(t.getTranslateX() + playerWidth + Main.fb.getStrokeWidth() + temp.getLayoutBounds().getWidth());
+        t.setTranslateY(Main.fb.getHeight()-Main.fb.getHeight()/4);
     }
 
     public ArrayList<Text> getTexts() {
