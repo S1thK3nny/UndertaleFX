@@ -1,6 +1,7 @@
 package com.sith.buttons;
 
 import com.sith.Item;
+import com.sith.Main;
 import com.sith.Player;
 import com.sith.globals;
 import javafx.application.Platform;
@@ -17,6 +18,7 @@ public class itemButton extends interactiveButton {
     Text currentPageText = new Text(pageText);
     int currentPage = 0;
     int itemsPerPage = 4;
+    boolean firstTime = true;
 
     public itemButton(Player player) {
         super(globals.itemButton, globals.itemButtonSelected);
@@ -79,7 +81,7 @@ public class itemButton extends interactiveButton {
             //currentPageText.setTranslateY((Main.fb.getY() - Main.fb.getHeight()) / 2);
             currentPageText.setVisible(true);
             secondRow.getChildren().add(currentPageText);
-            //options.getChildren().add(currentPageText);
+            currentPageText.setManaged(false);
         }
         else {
             currentPageText.setVisible(false);
