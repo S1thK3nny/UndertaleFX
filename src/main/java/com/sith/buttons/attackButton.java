@@ -11,7 +11,6 @@ public class attackButton extends interactiveButton {
     @Override
     public void openButton() {
         super.openButton();
-        System.out.println("Attack button...");
         System.out.println("No functionality yet...");
     }
 }

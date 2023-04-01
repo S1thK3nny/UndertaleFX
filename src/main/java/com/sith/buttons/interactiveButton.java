@@ -1,6 +1,7 @@
 package com.sith.buttons;
 
 import com.sith.Main;
+import com.sith.Player;
 import com.sith.globals;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -20,7 +21,7 @@ public abstract class interactiveButton extends Rectangle {
     Image buttonSelected;
     Image buttonNotSelected;
     protected ArrayList<Text> texts = new ArrayList<>();
-    int currentSelectedInteraction = 0;
+    int option = 0;
     Text t;
 
     public interactiveButton(Image buttonNotSelected, Image buttonSelected) {
@@ -72,9 +73,10 @@ public abstract class interactiveButton extends Rectangle {
         options.setTranslateX(Main.fb.getX()*1.5 - Main.fb.getStrokeWidth());
         options.setTranslateY(Main.fb.getY() + t.getBoundsInLocal().getHeight()/2 - Main.fb.getStrokeWidth());
         options.setVisible(true);
+        option = 0;
     }
 
-    public String interact(int currentSelectedInteraction) {
+    public String interact() {
         globals.buttonConfirmSound.play();
         return "* Oh no...what happened here?!";
     }
@@ -119,4 +121,41 @@ public abstract class interactiveButton extends Rectangle {
         return Main.fb.getY() + texts.get(i).getLayoutY() - playerHeight/2;
     }
 
+    public void selectInteraction(String direction, Player player) {
+        switch (direction) {
+            case "up" -> {
+                if(option >= 2) {
+                    globals.switchCurrentElementSound.play();
+                    option -= 2;
+                }
+                else if(option >= 1) {
+                    globals.switchCurrentElementSound.play();
+                    --option;
+                }
+            }
+            case "left" -> {
+                if(option > 0) {
+                    --option;
+                    globals.switchCurrentElementSound.play();
+                }
+            }
+            case "down" -> {
+                if(option+2 < getTexts().size()) {
+                    globals.switchCurrentElementSound.play();
+                    option +=2;
+                }
+                else if(option+1 < getTexts().size()) {
+                    globals.switchCurrentElementSound.play();
+                    ++option;
+                }
+            }
+            case "right" -> {
+                if(option < getTexts().size()-1 ) {
+                    globals.switchCurrentElementSound.play();
+                    ++option;
+                }
+            }
+        }
+        player.movePlayer(getTextX(option, player.getWidth()), getTextY(option, player.getHeight()));
+    }
 }

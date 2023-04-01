@@ -4,6 +4,7 @@ import com.sith.buttons.*;
 import com.sith.enemies.Projectile;
 import javafx.animation.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
@@ -20,7 +21,6 @@ import java.util.*;
 public class Main extends Application {
     interactiveButton[] buttons;
     int currentSelectedButton = -1;
-    int currentSelectedInteraction = 0;
 
     boolean atTopBorder = false;
     boolean atBottomBorder = false;
@@ -120,16 +120,16 @@ public class Main extends Application {
             if(player.getState().equals("menu")) {
                 if(interactiveButton.wentIntoButton) {
                     if(userInputRight()) {
-                        selectInteraction("right");
+                        buttons[currentSelectedButton].selectInteraction("right", player);
                     }
                     else if(userInputLeft()) {
-                        selectInteraction("left");
+                        buttons[currentSelectedButton].selectInteraction("left", player);
                     }
                     else if(userInputTop()) {
-                        selectInteraction("up");
+                        buttons[currentSelectedButton].selectInteraction("up", player);
                     }
                     else if(userInputDown()) {
-                        selectInteraction("down");
+                        buttons[currentSelectedButton].selectInteraction("down", player);
                     }
                 }
                 else {
@@ -156,8 +156,7 @@ public class Main extends Application {
                         //Yes, this excludes the fight button.
                         if(currentSelectedButton>0) {
                             //Moves player to the corresponding text
-                            player.movePlayer(buttons[currentSelectedButton].getTextX(0, player.getWidth()), buttons[currentSelectedButton].getTextY(0, player.getHeight()));
-                            currentSelectedInteraction = 0;
+                            Platform.runLater(() -> player.movePlayer(buttons[currentSelectedButton].getTextX(0, player.getWidth()), buttons[currentSelectedButton].getTextY(0, player.getHeight())));
                         }
                         else {
                             //Temp option if the player pressed fight
@@ -167,7 +166,7 @@ public class Main extends Application {
                     else if(interactiveButton.wentIntoButton && currentSelectedButton>0) {
                         deselectButtons();
                         buttons[currentSelectedButton].hideOptions();
-                        fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact(currentSelectedInteraction), player);
+                        fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact(), player);
                     }
                 }
                 else if(keysPressed.contains("X") && interactiveButton.wentIntoButton && currentSelectedButton>0) {
@@ -432,45 +431,6 @@ public class Main extends Application {
         //You want advice? Don't touch this ever again.
         player.movePlayer(buttons[buttonID].getLayoutX() + buttons[buttonID].getWidth()/6.5 - player.getWidth()/2 + horizontalButtonAlignment.getLayoutX(), horizontalButtonAlignment.getLayoutY() + buttons[0].getHeight()/2 - player.getHeight()/2);
 
-    }
-
-
-    public void selectInteraction(String direction) {
-        switch (direction) {
-            case "up" -> {
-                if(currentSelectedInteraction>=2) {
-                    globals.switchCurrentElementSound.play();
-                    currentSelectedInteraction-=2;
-                }
-                else if(currentSelectedInteraction>=1) {
-                    globals.switchCurrentElementSound.play();
-                    --currentSelectedInteraction;
-                }
-            }
-            case "left" -> {
-                if(currentSelectedInteraction>0) {
-                    --currentSelectedInteraction;
-                    globals.switchCurrentElementSound.play();
-                }
-            }
-            case "down" -> {
-                if(currentSelectedInteraction+2 < buttons[currentSelectedButton].getTexts().size()) {
-                    globals.switchCurrentElementSound.play();
-                    currentSelectedInteraction+=2;
-                }
-                else if(currentSelectedInteraction+1 < buttons[currentSelectedButton].getTexts().size()) {
-                    globals.switchCurrentElementSound.play();
-                    ++currentSelectedInteraction;
-                }
-            }
-            case "right" -> {
-                if(currentSelectedInteraction < buttons[currentSelectedButton].getTexts().size()-1 ) {
-                    globals.switchCurrentElementSound.play();
-                    ++currentSelectedInteraction;
-                }
-            }
-        }
-        player.movePlayer(buttons[currentSelectedButton].getTextX(currentSelectedInteraction, player.getWidth()), buttons[currentSelectedButton].getTextY(currentSelectedInteraction, player.getHeight()));
     }
 
 
