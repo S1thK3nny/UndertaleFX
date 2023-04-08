@@ -2,13 +2,15 @@ package com.sith;
 
 import com.sith.buttons.*;
 import com.sith.enemies.Projectile;
-import javafx.animation.*;
+import javafx.animation.AnimationTimer;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -42,7 +44,7 @@ public class Main extends Application {
     boolean throwProjectiles = false;
 
     static final HashSet<String> keysPressed = new HashSet<>();
-    final List<Projectile> list= new ArrayList<>();
+    final List<Projectile> list = new ArrayList<>();
     final List<Projectile> projectiles = Collections.synchronizedList(list);
 
     static Rectangle healthBar;
@@ -53,6 +55,7 @@ public class Main extends Application {
     HBox horizontalButtonAlignment;
 
     Timeline projectileTimeline;
+    Timeline splashTimeline;
 
     public static void main(String[] args) {
         launch(args);
@@ -61,15 +64,50 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         Pane root = new Pane();
-        root.setStyle("-fx-background-color: black;");
 
         Scene scene = new Scene(root, 1920, 1080, Color.BLACK);
         primaryStage.setWidth(1920);
         primaryStage.setHeight(1080);
         primaryStage.setMinWidth(primaryStage.getWidth());
         primaryStage.setMinHeight(primaryStage.getHeight());
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.setTitle("undertaleFX");
+        primaryStage.getIcons().add(globals.redHeart);
+        primaryStage.show();
 
+        root.setBackground(new Background(
+                new BackgroundImage(
+                        globals.splashScreen,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundRepeat.NO_REPEAT,
+                        BackgroundPosition.CENTER,
+                        new BackgroundSize(
+                                root.getWidth(),
+                                root.getHeight(),
+                                false,
+                                false,
+                                false,
+                                false
+                        )
+                )
+        ));
 
+        globals.splashScreenSound.play();
+
+        //Yes, we could use a mediaplayer, but how about we don't
+        splashTimeline = new Timeline(new KeyFrame(Duration.seconds(0.1), event -> {
+            if (!globals.splashScreenSound.isPlaying()) {
+                splashTimeline.stop();
+                runGame(root, scene);
+            }
+        }));
+        splashTimeline.setCycleCount(Timeline.INDEFINITE);
+        splashTimeline.play();
+    }
+
+    public void runGame(Pane root, Scene scene) {
+        root.setStyle("-fx-background-color: black;");
 
         //fb start
         fbWidth = scene.getWidth()/2 + scene.getWidth()/4;
@@ -99,13 +137,6 @@ public class Main extends Application {
         //Buttons end
 
         root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions());
-
-        //Window stuff start
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        primaryStage.setTitle("UNDERTALE");
-        primaryStage.getIcons().add(globals.redHeart);
-        //Window stuff start
 
         projectileTimeline = new Timeline(
                 new KeyFrame(Duration.millis(150), e -> test = new Projectile(projectiles, root, fb, fb.getY(), 35, 50))
@@ -142,7 +173,7 @@ public class Main extends Application {
                 }
 
 
-                if (keysPressed.contains("Z") && !fb.getIsResizing()) {
+                if (userInputSelect() && !fb.getIsResizing()) {
                     //player.drawCollision();
 
                     //If you have no items left and try to use the item button
@@ -178,7 +209,7 @@ public class Main extends Application {
             }
 
             else if(player.getState().equals("gone")) {
-                if(keysPressed.contains("Z")) {
+                if(userInputSelect()) {
                     if(fb.hasFinishedDialog()) finishPlayerMove();
                 }
                 else if(keysPressed.contains("X")) {
@@ -472,4 +503,6 @@ public class Main extends Application {
     public static boolean userInputBack() {
         return keysPressed.contains("SHIFT") || keysPressed.contains("X");
     }
+
+    public static boolean userInputSelect() {return keysPressed.contains("Z") || keysPressed.contains("ENTER");}
 }

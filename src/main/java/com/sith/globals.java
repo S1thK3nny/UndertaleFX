@@ -7,6 +7,9 @@ import javafx.scene.text.Font;
 import java.io.File;
 
 public class globals {
+    //Splash screen
+    public static final Image splashScreen = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/Splash.png");
+
     //Player icon hearts
     public static final Image redHeart = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/hearts/heart.png");
     public static final Image blueHeart = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/hearts/heart_blue.png");
@@ -27,7 +30,10 @@ public class globals {
     public static final Image itemButtonSelected = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/buttons/spr_itembt_1.png");
     public static final Image mercyButtonSelected = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/buttons/spr_sparebt_1.png");
 
-    //Sounds
+    /*Sounds
+    NOTE: OGG FILES ARE NOT SUPPORTED!
+    */
+    public static final AudioClip splashScreenSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/mus_intronoise.wav").toURI().toString()); //I have no idea how, but it took me 10 minutes to find this at least and only then also thought of the name "intro" due to a YT vid. This is what people mean when they say I am special.
     public static final AudioClip hurtSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_hurt1.wav").toURI().toString());
     public static final AudioClip buttonConfirmSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_select.wav").toURI().toString());
     public static final AudioClip switchCurrentElementSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_squeak.wav").toURI().toString()); //Ok look, I get it, switchCurrentElement is not a good name but squeak? Come on Toby, that took me at least a minute to find
