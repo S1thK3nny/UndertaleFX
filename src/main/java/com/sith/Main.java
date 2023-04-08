@@ -298,34 +298,25 @@ public class Main extends Application {
         if(fb.getWidth() != fbWidth || fb.getHeight() != fbHeight || fb.getX() != fbX || fb.getY() != fbY) {
             fb.setIsResizing(true);
             Timeline resize = new Timeline();
-            Timeline move = new Timeline();
 
             resize.getKeyFrames().addAll(
                     new KeyFrame(Duration.millis(0),
+                            new KeyValue(fb.xProperty(), fb.getX()),
+                            new KeyValue(fb.yProperty(), fb.getY()),
                             new KeyValue(fb.widthProperty(), fb.getWidth()),
                             new KeyValue(fb.heightProperty(), fb.getHeight())),
                     new KeyFrame(Duration.millis(275),
-                            new KeyValue(fb.widthProperty(), fbWidth),
-                            new KeyValue(fb.heightProperty(), fbHeight))
-
-            );
-
-            move.getKeyFrames().addAll(
-                    new KeyFrame(Duration.millis(0),
-                            new KeyValue(fb.xProperty(), fb.getX()),
-                            new KeyValue(fb.yProperty(), fb.getY())),
-                    new KeyFrame(Duration.millis(200),
                             new KeyValue(fb.xProperty(), fbX),
-                            new KeyValue(fb.yProperty(), fbY)),
-                    new KeyFrame(Duration.millis(200), e -> {
+                            new KeyValue(fb.yProperty(), fbY),
+                            new KeyValue(fb.widthProperty(), fbWidth),
+                            new KeyValue(fb.heightProperty(), fbHeight)),
+                    new KeyFrame(Duration.millis(275), e -> {
                         fb.setIsResizing(false);
                         fb.setCurrentTextVisible(true);
                     })
-            );
 
-            move.setDelay(Duration.millis(150));
+            );
             resize.play();
-            move.play();
         }
         else {
             fb.setCurrentTextVisible(true);
