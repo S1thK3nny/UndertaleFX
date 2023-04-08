@@ -21,6 +21,8 @@ import javafx.util.Duration;
 import java.util.*;
 
 public class Main extends Application {
+    final boolean DEVELOPER_MODE = true;
+
     interactiveButton[] buttons;
     int currentSelectedButton = -1;
 
@@ -54,6 +56,8 @@ public class Main extends Application {
     HBox healthBars;
     HBox horizontalButtonAlignment;
 
+    Text LVL;
+
     Timeline projectileTimeline;
     Timeline splashTimeline;
 
@@ -72,7 +76,7 @@ public class Main extends Application {
         primaryStage.setMinHeight(primaryStage.getHeight());
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
-        primaryStage.setTitle("undertaleFX");
+        primaryStage.setTitle("UndertaleFX");
         primaryStage.getIcons().add(globals.redHeart);
         primaryStage.show();
 
@@ -148,6 +152,38 @@ public class Main extends Application {
         //OnKey start
         scene.setOnKeyPressed(event -> {
             keysPressed.add(event.getCode().toString());
+
+            if(DEVELOPER_MODE) {
+                if(keysPressed.contains("E") || keysPressed.contains("Q")) {
+                    if(keysPressed.contains("E")) {
+                        changePlayerLV(true);
+                    }
+                    else if(keysPressed.contains("Q")) {
+                        changePlayerLV(false);
+                    }
+                }
+
+                else if(keysPressed.contains("G")) {
+                    if(throwProjectiles) {
+                        projectileTimeline.stop();
+                    }
+                    if(!throwProjectiles) {
+                        projectileTimeline.play();
+                    }
+                    throwProjectiles = !throwProjectiles;
+                }
+
+                else if(keysPressed.contains("SPACE")) {
+                    if(player.state.equals("normal")) {
+                        //player.setState("gravity");
+                        enterMenu();
+                    }
+                    else {
+                        finishPlayerMove();
+                    }
+                }
+            }
+
             if(player.getState().equals("menu")) {
                 if(interactiveButton.wentIntoButton) {
                     if(userInputRight()) {
@@ -171,7 +207,6 @@ public class Main extends Application {
                         selectButton(false);
                     }
                 }
-
 
                 if (userInputSelect() && !fb.getIsResizing()) {
                     //player.drawCollision();
@@ -225,25 +260,6 @@ public class Main extends Application {
                     );
                     wTimeline.play();
                 }
-            }
-            else if(keysPressed.contains("SPACE")) {
-                if(player.state.equals("normal")) {
-                    //player.setState("gravity");
-                    enterMenu();
-                }
-                else {
-                    finishPlayerMove();
-                }
-            }
-            else if(keysPressed.contains("G")) {
-                if(throwProjectiles) {
-                    projectileTimeline.stop();
-
-                }
-                if(!throwProjectiles) {
-                    projectileTimeline.play();
-                }
-                throwProjectiles = !throwProjectiles;
             }
         });
 
@@ -329,7 +345,7 @@ public class Main extends Application {
         Text name = new Text(player.getName());
         configureText(name);
 
-        Text LVL = new Text("LV " + player.getLV());
+        LVL = new Text("LV " + player.getLV());
         configureText(LVL);
 
         Text HP = new Text("HP");
@@ -466,6 +482,8 @@ public class Main extends Application {
         fb.setCurrentTextVisible(false);
     }
 
+
+
     public void enterMenu() {
         player.setState("menu");
         currentSelectedButton = 0;
@@ -473,6 +491,26 @@ public class Main extends Application {
         buttons[currentSelectedButton].select(buttons);
         projectileTimeline.stop();
         resetFB();
+    }
+
+
+
+    public void changePlayerLV(boolean increaseLV) {
+        if(increaseLV) {
+            player.increaseLV();
+        }
+        else {
+            player.decreaseLV();
+        }
+
+        player.restoreHealth(player.getMaxHealth());
+        LVL.setText("LV " + player.getLV());
+        curAndMaxHealth.setText(player.getCurHealth()+"/"+player.getMaxHealth());
+
+        lostHealthBar.setWidth(player.getMaxHealth()*3);
+        healthBar.setWidth(lostHealthBar.getWidth());
+        curAndMaxHealth.setTranslateX(0);
+        healthBars.setSpacing(-healthBar.getWidth());
     }
 
     public static boolean userInputTop() {

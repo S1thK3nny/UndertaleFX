@@ -29,8 +29,8 @@ public class Player extends Rectangle {
     boolean invincible = false;
 
     private final String name = "CHARA";
-    private final int LV = 7;
-    private final int maxHealth;
+    private int LV = 7;
+    private int maxHealth;
     private int curHealth;
 
     String state = "normal";
@@ -40,6 +40,10 @@ public class Player extends Rectangle {
         addCollisionBox();
         setFill(new ImagePattern(globals.redHeart));
 
+        setupHealth();
+    }
+
+    public void setupHealth() {
         int baseHealth = 20;
         if(LV==20) {
             maxHealth = 99;
@@ -47,7 +51,17 @@ public class Player extends Rectangle {
         else {
             maxHealth = baseHealth + ((LV-1)*4);
         }
-        curHealth = maxHealth;
+        if(curHealth==0 || curHealth>=maxHealth) {
+            curHealth = maxHealth;
+        }
+        else {
+            if(LV==20) {
+                curHealth += 7;
+            }
+            else {
+                curHealth += 4;
+            }
+        }
     }
 
     public void updatePosition(double sceneWidth, double sceneHeight, Boolean[] borders, boolean wTimer) {
@@ -214,13 +228,32 @@ public class Player extends Rectangle {
     }
 
     public void healPlayer(int healpoints) {
+        restoreHealth(healpoints);
+        Main.setHealthText(curHealth, maxHealth, healpoints, false);
+        globals.healSound.play();
+    }
+
+    public void restoreHealth(int healpoints) {
         if(curHealth+healpoints<maxHealth) {
             curHealth+=healpoints;
         }
         else {
             curHealth = maxHealth;
         }
-        globals.healSound.play();
-        Main.setHealthText(curHealth, maxHealth, healpoints, false);
+    }
+
+    public void increaseLV() {
+        if(!(LV>=20)) {
+            LV++;
+            globals.levelUpSound.play();
+            setupHealth();
+        }
+    }
+
+    public void decreaseLV() {
+        if(!(LV<=1)) {
+            LV--;
+            setupHealth();
+        }
     }
 }
