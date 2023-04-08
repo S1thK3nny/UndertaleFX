@@ -2,6 +2,7 @@ package com.sith;
 
 import javafx.scene.image.Image;
 import javafx.scene.media.AudioClip;
+import javafx.scene.media.Media;
 import javafx.scene.text.Font;
 
 import java.io.File;
@@ -33,13 +34,20 @@ public class globals {
     /*Sounds
     NOTE: OGG FILES ARE NOT SUPPORTED!
     */
-    public static final AudioClip splashScreenSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/mus_intronoise.wav").toURI().toString()); //I have no idea how, but it took me 10 minutes to find this at least and only then also thought of the name "intro" due to a YT vid. This is what people mean when they say I am special.
     public static final AudioClip hurtSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_hurt1.wav").toURI().toString());
     public static final AudioClip buttonConfirmSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_select.wav").toURI().toString());
     public static final AudioClip switchCurrentElementSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_squeak.wav").toURI().toString()); //Ok look, I get it, switchCurrentElement is not a good name but squeak? Come on Toby, that took me at least a minute to find
     public static final AudioClip charAppearSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_char.wav").toURI().toString());
     public static final AudioClip healSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_heal_c.wav").toURI().toString());
     public static final AudioClip levelUpSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_levelup.wav").toURI().toString());
+
+    /*Music
+    For music, we have to use Media so that other AudioClips will not interrupt / stop the music.
+    splashScreenSound is an exception, due to it playing only at the very beginning.
+     */
+    public static final AudioClip splashScreenSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/music/mus_intronoise.wav").toURI().toString()); //I have no idea how, but it took me 10 minutes to find this at least and only then also thought of the name "intro" due to a YT vid. This is what people mean when they say I am special.
+    public static final Media battleMusic = new Media(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/music/mus_battle1.wav").toURI().toString());
+
 
     // Enemies //
 

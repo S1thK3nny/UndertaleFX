@@ -12,6 +12,7 @@ import javafx.application.Platform;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -117,6 +118,9 @@ public class Main extends Application {
 
     public void runGame(Pane root, Scene scene) {
         root.setStyle("-fx-background-color: black;");
+        MediaPlayer mediaPlayer = new MediaPlayer(globals.battleMusic);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+        mediaPlayer.play();
 
         //fb start
         fbWidth = scene.getWidth()/2 + scene.getWidth()/4;
@@ -161,15 +165,9 @@ public class Main extends Application {
 
 
         //Enemies start
-        Enemy test = new Enemy(root, enemies, globals.dummySprites);
-        Enemy test2 = new Enemy(root, enemies, globals.dummySprites);
-        Enemy test3 = new Enemy(root, enemies, globals.dummySprites);
-        Enemy test4 = new Enemy(root, enemies, globals.dummySprites);
-
         setupEnemyBox();
         if (DEVELOPER_MODE) enemiesBox.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
         for (Enemy enemy : enemies) {
-            HBox.setHgrow(enemy, javafx.scene.layout.Priority.ALWAYS);
             enemiesBox.getChildren().add(enemy);
         }
         //Enemies end
@@ -208,6 +206,17 @@ public class Main extends Application {
                     }
                     else {
                         finishPlayerMove();
+                    }
+                }
+
+                else if(keysPressed.contains("TAB")) {
+                    Enemy test = new Enemy(root, enemies, globals.dummySprites);
+                    enemiesBox.getChildren().add(test);
+                    if(enemies.size()>4) {
+                        enemies.clear();
+                        enemiesBox.getChildren().clear();
+                        Enemy newTest = new Enemy(root, enemies, globals.dummySprites);
+                        enemiesBox.getChildren().add(newTest);
                     }
                 }
             }
