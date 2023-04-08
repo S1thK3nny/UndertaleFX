@@ -1,6 +1,7 @@
 package com.sith;
 
 import com.sith.buttons.*;
+import com.sith.enemies.Enemy;
 import com.sith.enemies.Projectile;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -48,6 +49,7 @@ public class Main extends Application {
     static final HashSet<String> keysPressed = new HashSet<>();
     final List<Projectile> list = new ArrayList<>();
     final List<Projectile> projectiles = Collections.synchronizedList(list);
+    final ArrayList<Enemy> enemies = new ArrayList<>();
 
     static Rectangle healthBar;
     static Rectangle lostHealthBar;
@@ -55,6 +57,7 @@ public class Main extends Application {
     HBox underFB;
     HBox healthBars;
     HBox horizontalButtonAlignment;
+    HBox enemiesBox;
 
     Text LVL;
 
@@ -110,6 +113,8 @@ public class Main extends Application {
         splashTimeline.play();
     }
 
+
+
     public void runGame(Pane root, Scene scene) {
         root.setStyle("-fx-background-color: black;");
 
@@ -121,9 +126,13 @@ public class Main extends Application {
         fb = new FightingBox(fbX, fbY, fbWidth, fbHeight);
         //fb end
 
+
+
         //player start
         player = new Player(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5, 45, 45); //For the player position, we cannot just take the width and height into account but also the moved X and Y position of the fb
         //player end
+
+
 
         //Health start
         curAndMaxHealth = new Text(player.getCurHealth()+"/"+player.getMaxHealth());
@@ -133,6 +142,8 @@ public class Main extends Application {
         configureUnderFBStuff();
         //Health end
 
+
+
         //Buttons start
         //This is ugly, I know. However, we have to do this so that we can call itemButton.noItemsLeft() later
         itemButton itemButton = new itemButton(player);
@@ -140,7 +151,7 @@ public class Main extends Application {
         addButtons();
         //Buttons end
 
-        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions());
+
 
         projectileTimeline = new Timeline(
                 new KeyFrame(Duration.millis(150), e -> test = new Projectile(projectiles, root, fb, fb.getY(), 35, 50))
@@ -148,6 +159,23 @@ public class Main extends Application {
         projectileTimeline.setCycleCount(Timeline.INDEFINITE);
 
 
+
+        //Enemies start
+        Enemy test = new Enemy(root, enemies, globals.dummySprites);
+        Enemy test2 = new Enemy(root, enemies, globals.dummySprites);
+        Enemy test3 = new Enemy(root, enemies, globals.dummySprites);
+        Enemy test4 = new Enemy(root, enemies, globals.dummySprites);
+
+        setupEnemyBox();
+        if (DEVELOPER_MODE) enemiesBox.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
+        for (Enemy enemy : enemies) {
+            HBox.setHgrow(enemy, javafx.scene.layout.Priority.ALWAYS);
+            enemiesBox.getChildren().add(enemy);
+        }
+        //Enemies end
+
+
+        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions(), enemiesBox);
 
         //OnKey start
         scene.setOnKeyPressed(event -> {
@@ -496,6 +524,7 @@ public class Main extends Application {
 
 
     public void changePlayerLV(boolean increaseLV) {
+        //For hells' sake, no, do NOT mess with this again. This is the way.
         if(increaseLV) {
             player.increaseLV();
         }
@@ -511,6 +540,20 @@ public class Main extends Application {
         healthBar.setWidth(lostHealthBar.getWidth());
         curAndMaxHealth.setTranslateX(0);
         healthBars.setSpacing(-healthBar.getWidth());
+    }
+
+    public void setupEnemyBox() {
+        enemiesBox = new HBox();
+        enemiesBox.setSpacing(fb.getWidth()/4 - fb.getX()/2);
+
+        enemiesBox.setMaxWidth(fb.getWidth() + fb.getStrokeWidth());
+        enemiesBox.setMinWidth(fb.getWidth() + fb.getStrokeWidth());
+
+        enemiesBox.setMinHeight(fb.getHeight());
+
+        enemiesBox.setTranslateY((fb.getY() - fb.getHeight()) - player.getHeight()/2);
+        enemiesBox.setTranslateX(fb.getX() - fb.getStrokeWidth()/2);
+        enemiesBox.setAlignment(Pos.BOTTOM_CENTER);
     }
 
     public static boolean userInputTop() {

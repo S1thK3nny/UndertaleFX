@@ -40,4 +40,14 @@ public class globals {
     public static final AudioClip charAppearSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_char.wav").toURI().toString());
     public static final AudioClip healSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_heal_c.wav").toURI().toString());
     public static final AudioClip levelUpSound = new AudioClip(new File("C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/sounds/snd_levelup.wav").toURI().toString());
+
+    // Enemies //
+
+    //Dummy
+    private static final Image dummy = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/enemies/dummy/spr_dummybattle_0.png");
+    private static final Image dummyHurt = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/enemies/dummy/spr_dummybattle_1.png");
+    private static final Image dummyGlad = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/enemies/dummy/spr_dummybattle_glad_0.png");
+    private static final Image dummyGladHurt = new Image("file:C:/Users/Kenny/Documents/GitHub/Undertale_Two/src/main/resources/images/enemies/dummy/spr_dummybattle_glad_1.png");
+
+    public static final Image[] dummySprites = {dummy, dummyHurt, dummyGlad, dummyGladHurt};
 }
