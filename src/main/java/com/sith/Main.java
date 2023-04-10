@@ -4,10 +4,7 @@ import com.sith.buttons.*;
 import com.sith.enemies.Dummy;
 import com.sith.enemies.Enemy;
 import com.sith.enemies.Projectile;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -121,7 +118,7 @@ public class Main extends Application {
 
     public void runGame(Pane root, Scene scene) {
         root.setStyle("-fx-background-color: black;");
-        MediaPlayer mediaPlayer = new MediaPlayer(globals.battleMusic);
+        MediaPlayer mediaPlayer = new MediaPlayer(globals.preBattleMusic);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.play();
 
@@ -176,7 +173,7 @@ public class Main extends Application {
             enemiesBox.getChildren().add(enemy);
         }
 
-        Enemy test = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "Dummy", 0, 0);
+        Enemy test = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "DUMMY", 0, 0);
         //Enemies end
 
 
@@ -399,7 +396,7 @@ public class Main extends Application {
 
     private void movePlayerToButton(int buttonID) {
         //You want advice? Don't touch this ever again.
-        player.movePlayer(buttons[buttonID].getLayoutX() + buttons[buttonID].getWidth()/6.5 - player.getWidth()/2 + horizontalButtonAlignment.getLayoutX(), horizontalButtonAlignment.getLayoutY() + buttons[0].getHeight()/2 - player.getHeight()/2);
+        Platform.runLater(() ->         player.movePlayer(buttons[buttonID].getLayoutX() + buttons[buttonID].getWidth()/6.5 - player.getWidth()/2 + horizontalButtonAlignment.getLayoutX(), horizontalButtonAlignment.getLayoutY() + buttons[0].getHeight()/2 - player.getHeight()/2));
 
     }
 
@@ -513,11 +510,24 @@ public class Main extends Application {
         }
 
         private void handleDEVEnemySpawn(Pane root) {
-            Dummy spawnedEnemy = new Dummy(root, enemies, enemiesBox, "Dummy "  + enemies.size(), 0, 0);
+            Dummy spawnedEnemy = new Dummy(root, enemies, enemiesBox, "DUMMY "  + enemies.size(), 0, 0);
+
+            TranslateTransition transition = new TranslateTransition(Duration.seconds(0.25), spawnedEnemy);
+            spawnedEnemy.setTranslateX(-spawnedEnemy.getWidth());
+            transition.setToX(0);
+            transition.play();
+
+            for(int i=0; i<enemies.size()-1; i++) {
+                TranslateTransition transition2 = new TranslateTransition(Duration.seconds(0.25), enemies.get(i));
+                enemies.get(i).setTranslateX(enemies.get(i).getWidth());
+                transition2.setToX(0);
+                transition2.play();
+            }
+
             if (enemies.size() > 4) {
                 enemies.clear();
                 enemiesBox.getChildren().clear();
-                Enemy newTest = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "Dummy", 0, 0);
+                Enemy newTest = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "DUMMY", 0, 0);
             }
         }
 

@@ -47,7 +47,8 @@ public class globals {
     splashScreenSound is an exception, due to it playing only at the very beginning.
      */
     public static final AudioClip splashScreenSound = new AudioClip(new File("./src/main/resources/music/mus_intronoise.wav").toURI().toString()); //I have no idea how, but it took me 10 minutes to find this at least and only then also thought of the name "intro" due to a YT vid. This is what people mean when they say I am special.
-    public static final Media battleMusic = new Media(new File("./src/main/resources/music/mus_battle1.wav").toURI().toString());
+    //public static final Media battleMusic = new Media(new File("./src/main/resources/music/mus_battle1.wav").toURI().toString());
+    public static final Media preBattleMusic = new Media(new File("./src/main/resources/music/mus_prebattle1.wav").toURI().toString());
 
 
     // Enemies //
