@@ -14,6 +14,8 @@ import java.util.ArrayList;
 
 public abstract class interactiveButton extends Rectangle {
     public static boolean wentIntoButton = false;
+    public static boolean hasSelectedEnemy = false;
+    public boolean needsSelectedEnemy = false;
     protected boolean selected = false;
     protected HBox options;
     protected VBox firstRow = new VBox();
@@ -22,6 +24,7 @@ public abstract class interactiveButton extends Rectangle {
     Image buttonNotSelected;
     protected ArrayList<Text> texts = new ArrayList<>();
     int option = 0;
+    int selectedEnemy = 0;
     Text t;
 
     public interactiveButton(Image buttonNotSelected, Image buttonSelected) {
@@ -78,7 +81,7 @@ public abstract class interactiveButton extends Rectangle {
 
     public String interact() {
         globals.buttonConfirmSound.play();
-        return "* Oh no...what happened here?!";
+        return "* Oh no...what happened here?! " + option;
     }
 
     public HBox getOptions() {
@@ -122,41 +125,95 @@ public abstract class interactiveButton extends Rectangle {
         return Main.fb.getY() + texts.get(i).getLayoutY() - playerHeight/2;
     }
 
-    public void selectInteraction(String direction, Player player) {
+    public int getOption() {
+        return option;
+    }
+
+    public int getSelectedEnemy() {
+        return selectedEnemy;
+    }
+
+    public void resetSelectedEnemy() {
+        selectedEnemy = 0;
+    }
+
+    public void selectInteraction(String direction, Player player, int menu) {
+
         switch (direction) {
             case "up" -> {
-                if(option >= 2) {
+                if(menu >= 2) {
                     globals.switchCurrentElementSound.play();
-                    option -= 2;
+                    menu -= 2;
                 }
-                else if(option >= 1) {
+                else if(menu >= 1) {
                     globals.switchCurrentElementSound.play();
-                    --option;
+                    --menu;
                 }
             }
             case "left" -> {
-                if(option > 0) {
-                    --option;
+                if(menu > 0) {
                     globals.switchCurrentElementSound.play();
+                    --menu;
                 }
             }
             case "down" -> {
-                if(option+2 < getTexts().size()) {
+                if(menu+2 < getTexts().size()) {
                     globals.switchCurrentElementSound.play();
-                    option +=2;
+                    menu +=2;
                 }
-                else if(option+1 < getTexts().size()) {
+                else if(menu+1 < getTexts().size()) {
                     globals.switchCurrentElementSound.play();
-                    ++option;
+                    ++menu;
                 }
             }
             case "right" -> {
-                if(option < getTexts().size()-1 ) {
+                if(menu < getTexts().size()-1 ) {
                     globals.switchCurrentElementSound.play();
-                    ++option;
+                    ++menu;
                 }
             }
         }
-        player.movePlayer(getTextX(option, player.getWidth()), getTextY(option, player.getHeight()));
+
+        if(wentIntoButton) {
+            if(!needsSelectedEnemy || hasSelectedEnemy) {
+                option = menu;
+            }
+            else {
+                selectedEnemy = menu;
+            }
+        }
+
+        player.movePlayer(getTextX(menu, player.getWidth()), getTextY(menu, player.getHeight()));
+    }
+
+    public void updateEnemies() {
+        texts.clear();
+        for(int i=0; i< Main.enemies.size(); i++) {
+            Text t = new Text("* " + Main.enemies.get(i).getName());
+            texts.add(t);
+        }
+
+        firstRow.getChildren().clear();
+        secondRow.getChildren().clear();
+
+        for (int i = 0; i < texts.size(); i++) {
+            if (i % 2 == 0) {
+                firstRow.getChildren().add(texts.get(i));
+            } else {
+                secondRow.getChildren().add((texts.get(i)));
+            }
+        }
+        configureText(45);
+
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void actionAfterEnemySelected() {
+        option = 0;
+        globals.buttonConfirmSound.play();
     }
 }

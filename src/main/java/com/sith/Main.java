@@ -1,6 +1,7 @@
 package com.sith;
 
 import com.sith.buttons.*;
+import com.sith.enemies.Dummy;
 import com.sith.enemies.Enemy;
 import com.sith.enemies.Projectile;
 import javafx.animation.AnimationTimer;
@@ -23,9 +24,11 @@ import javafx.util.Duration;
 import java.util.*;
 
 public class Main extends Application {
+
     final boolean DEVELOPER_MODE = true;
 
     interactiveButton[] buttons;
+    itemButton itemButton;
     int currentSelectedButton = -1;
 
     boolean atTopBorder = false;
@@ -50,7 +53,7 @@ public class Main extends Application {
     static final HashSet<String> keysPressed = new HashSet<>();
     final List<Projectile> list = new ArrayList<>();
     final List<Projectile> projectiles = Collections.synchronizedList(list);
-    final ArrayList<Enemy> enemies = new ArrayList<>();
+    public static final ArrayList<Enemy> enemies = new ArrayList<>();
 
     static Rectangle healthBar;
     static Rectangle lostHealthBar;
@@ -150,7 +153,7 @@ public class Main extends Application {
 
         //Buttons start
         //This is ugly, I know. However, we have to do this so that we can call itemButton.noItemsLeft() later
-        itemButton itemButton = new itemButton(player);
+        itemButton = new itemButton(player);
         buttons = new interactiveButton[]{new attackButton(), new actButton(player.getWidth()), itemButton, new mercyButton(player.getWidth())}; //Need to declare them here so that the FB is ready
         addButtons();
         //Buttons end
@@ -164,140 +167,32 @@ public class Main extends Application {
 
 
 
-        //Enemies start
+        /*Enemies start
+        DO NOT SPAWN ENEMIES BEFORE ANYTHING OF THIS HAPPENED
+         */
         setupEnemyBox();
         if (DEVELOPER_MODE) enemiesBox.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
         for (Enemy enemy : enemies) {
             enemiesBox.getChildren().add(enemy);
         }
+
+        Enemy test = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "Dummy", 0, 0);
         //Enemies end
 
 
+
         root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions(), enemiesBox);
+
+
 
         //OnKey start
         scene.setOnKeyPressed(event -> {
             keysPressed.add(event.getCode().toString());
 
-            if(DEVELOPER_MODE) {
-                if(keysPressed.contains("E") || keysPressed.contains("Q")) {
-                    if(keysPressed.contains("E")) {
-                        changePlayerLV(true);
-                    }
-                    else if(keysPressed.contains("Q")) {
-                        changePlayerLV(false);
-                    }
-                }
-
-                else if(keysPressed.contains("G")) {
-                    if(throwProjectiles) {
-                        projectileTimeline.stop();
-                    }
-                    if(!throwProjectiles) {
-                        projectileTimeline.play();
-                    }
-                    throwProjectiles = !throwProjectiles;
-                }
-
-                else if(keysPressed.contains("SPACE")) {
-                    if(player.state.equals("normal")) {
-                        //player.setState("gravity");
-                        enterMenu();
-                    }
-                    else {
-                        finishPlayerMove();
-                    }
-                }
-
-                else if(keysPressed.contains("TAB")) {
-                    Enemy test = new Enemy(root, enemies, globals.dummySprites);
-                    enemiesBox.getChildren().add(test);
-                    if(enemies.size()>4) {
-                        enemies.clear();
-                        enemiesBox.getChildren().clear();
-                        Enemy newTest = new Enemy(root, enemies, globals.dummySprites);
-                        enemiesBox.getChildren().add(newTest);
-                    }
-                }
-            }
-
-            if(player.getState().equals("menu")) {
-                if(interactiveButton.wentIntoButton) {
-                    if(userInputRight()) {
-                        buttons[currentSelectedButton].selectInteraction("right", player);
-                    }
-                    else if(userInputLeft()) {
-                        buttons[currentSelectedButton].selectInteraction("left", player);
-                    }
-                    else if(userInputTop()) {
-                        buttons[currentSelectedButton].selectInteraction("up", player);
-                    }
-                    else if(userInputDown()) {
-                        buttons[currentSelectedButton].selectInteraction("down", player);
-                    }
-                }
-                else {
-                    if(userInputRight()) {
-                        selectButton(true);
-                    }
-                    else if(userInputLeft()) {
-                        selectButton(false);
-                    }
-                }
-
-                if (userInputSelect() && !fb.getIsResizing()) {
-                    //player.drawCollision();
-
-                    //If you have no items left and try to use the item button
-                    if(!interactiveButton.wentIntoButton && currentSelectedButton==2 && itemButton.noItemsLeft()) {
-                        globals.buttonConfirmSound.play();
-                    }
-                    else if(!interactiveButton.wentIntoButton && currentSelectedButton>=0) {
-                        buttons[currentSelectedButton].openButton();
-                        interactiveButton.wentIntoButton = true;
-                        fb.setCurrentTextVisible(false);
-                        //Yes, this excludes the fight button.
-                        if(currentSelectedButton>0) {
-                            //Moves player to the corresponding text
-                            Platform.runLater(() -> player.movePlayer(buttons[currentSelectedButton].getTextX(0, player.getWidth()), buttons[currentSelectedButton].getTextY(0, player.getHeight())));
-                        }
-                        else {
-                            //Temp option if the player pressed fight
-                            finishPlayerMove();
-                        }
-                    }
-                    else if(interactiveButton.wentIntoButton && currentSelectedButton>0) {
-                        deselectButtons();
-                        buttons[currentSelectedButton].hideOptions();
-                        fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact(), player);
-                    }
-                }
-                else if(keysPressed.contains("X") && interactiveButton.wentIntoButton && currentSelectedButton>0) {
-                    interactiveButton.wentIntoButton = false;
-                    buttons[currentSelectedButton].hideOptions();
-                    movePlayerToButton(currentSelectedButton);
-                    fb.setCurrentTextVisible(true);
-                }
-            }
-
-            else if(player.getState().equals("gone")) {
-                if(userInputSelect()) {
-                    if(fb.hasFinishedDialog()) finishPlayerMove();
-                }
-                else if(keysPressed.contains("X")) {
-                    if(!fb.hasFinishedDialog()) fb.skipDialog();
-                }
-            }
-
-            if(userInputTop() && player.getState().equals("gravity")) {
-                if(!wTimer && !player.isJumping) {
-                    wTimer = true;
-                    Timeline wTimeline = new Timeline(
-                            new KeyFrame(Duration.millis(600), e -> wTimer = false)
-                    );
-                    wTimeline.play();
-                }
-            }
+            handleDeveloperModeKeys(root);
+            handleMenuState();
+            handleGoneState();
+            handleGravityState();
         });
 
         scene.setOnKeyReleased(event -> keysPressed.remove(event.getCode().toString()));
@@ -502,9 +397,16 @@ public class Main extends Application {
 
 
 
-    public void movePlayerToButton(int buttonID) {
+    private void movePlayerToButton(int buttonID) {
         //You want advice? Don't touch this ever again.
         player.movePlayer(buttons[buttonID].getLayoutX() + buttons[buttonID].getWidth()/6.5 - player.getWidth()/2 + horizontalButtonAlignment.getLayoutX(), horizontalButtonAlignment.getLayoutY() + buttons[0].getHeight()/2 - player.getHeight()/2);
+
+    }
+
+
+
+    private void movePlayerToTextOption(int buttonID) {
+        Platform.runLater(() -> player.movePlayer(buttons[currentSelectedButton].getTextX(buttonID, player.getWidth()), buttons[currentSelectedButton].getTextY(buttonID, player.getHeight())));
 
     }
 
@@ -513,6 +415,8 @@ public class Main extends Application {
     public void finishPlayerMove() {
         player.setState("normal");
         interactiveButton.wentIntoButton = false;
+        interactiveButton.hasSelectedEnemy = false;
+        buttons[currentSelectedButton].resetSelectedEnemy();
         deselectButtons();
         buttons[currentSelectedButton].hideOptions();
         player.movePlayer(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5);
@@ -565,6 +469,240 @@ public class Main extends Application {
         enemiesBox.setAlignment(Pos.BOTTOM_CENTER);
     }
 
+
+
+    //      --  Developer Mode Keys start    --  //
+
+    private void handleDeveloperModeKeys(Pane root) {
+        if (!DEVELOPER_MODE) return;
+
+        if (keysPressed.contains("E") || keysPressed.contains("Q")) {
+            handleDEVPlayerLVChange();
+        } else if (keysPressed.contains("G")) {
+            handleDEVProjectileToggle();
+        } else if (keysPressed.contains("SPACE")) {
+            handleDEVEnterMenu();
+        } else if (keysPressed.contains("TAB")) {
+            handleDEVEnemySpawn(root);
+        }
+    }
+
+        private void handleDEVPlayerLVChange() {
+            if (keysPressed.contains("E")) {
+                changePlayerLV(true);
+            } else if (keysPressed.contains("Q")) {
+                changePlayerLV(false);
+            }
+        }
+
+        private void handleDEVProjectileToggle() {
+            if (throwProjectiles) {
+                projectileTimeline.stop();
+            } else {
+                projectileTimeline.play();
+            }
+            throwProjectiles = !throwProjectiles;
+        }
+
+        private void handleDEVEnterMenu() {
+            if (player.state.equals("normal")) {
+                enterMenu();
+            } else {
+                finishPlayerMove();
+            }
+        }
+
+        private void handleDEVEnemySpawn(Pane root) {
+            Dummy spawnedEnemy = new Dummy(root, enemies, enemiesBox, "Dummy "  + enemies.size(), 0, 0);
+            if (enemies.size() > 4) {
+                enemies.clear();
+                enemiesBox.getChildren().clear();
+                Enemy newTest = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "Dummy", 0, 0);
+            }
+        }
+
+    //      --  Developer Mode Keys end    --  //
+
+
+
+    //      --  Menu State start    --  //
+
+    private void handleMenuState() {
+        if(!player.getState().equals("menu")) return;
+
+        /*This HAS to be in a reverse order of how it should look in game.
+        If not, when choosing Enemy or Option the ButtonSelect() will also work and thus mess up which option you choose (e.g. go two to the right when you press right once).
+         */
+
+        handleMENUOptionSelect();
+        handleMENUEnemySelect();
+        handleMENUButtonSelect();
+
+        handleMENUUserInputSelect();
+        handleMENUUserInputBack();
+    }
+
+        private void handleMENUOptionSelect() {
+            if((!interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy) || !interactiveButton.wentIntoButton) return;
+
+            if(userInputRight()) {
+                buttons[currentSelectedButton].selectInteraction("right", player, buttons[currentSelectedButton].getOption());
+            }
+            else if(userInputLeft()) {
+                buttons[currentSelectedButton].selectInteraction("left", player, buttons[currentSelectedButton].getOption());
+            }
+            else if(userInputTop()) {
+                buttons[currentSelectedButton].selectInteraction("up", player, buttons[currentSelectedButton].getOption());
+            }
+            else if(userInputDown()) {
+                buttons[currentSelectedButton].selectInteraction("down", player, buttons[currentSelectedButton].getOption());
+            }
+        }
+
+        private void handleMENUEnemySelect() {
+            if(!interactiveButton.wentIntoButton || !buttons[currentSelectedButton].needsSelectedEnemy || interactiveButton.hasSelectedEnemy) return;
+
+            if(userInputRight()) {
+                buttons[currentSelectedButton].selectInteraction("right", player, buttons[currentSelectedButton].getSelectedEnemy());
+            }
+            else if(userInputLeft()) {
+                buttons[currentSelectedButton].selectInteraction("left", player, buttons[currentSelectedButton].getSelectedEnemy());
+            }
+            else if(userInputTop()) {
+                buttons[currentSelectedButton].selectInteraction("up", player, buttons[currentSelectedButton].getSelectedEnemy());
+            }
+            else if(userInputDown()) {
+                buttons[currentSelectedButton].selectInteraction("down", player, buttons[currentSelectedButton].getSelectedEnemy());
+            }
+        }
+
+        private void handleMENUButtonSelect() {
+            if(interactiveButton.wentIntoButton) return;
+
+            if(userInputRight()) {
+                selectButton(true);
+            }
+            else if(userInputLeft()) {
+                selectButton(false);
+            }
+        }
+
+
+
+        private void handleMENUUserInputSelect() {
+            if (!userInputSelect() || fb.getIsResizing()) return;
+
+            /*This HAS to be in a reverse order of how it should look in game. (e.g. select one of the four buttons, then enemy, then an act)
+            Otherwise, it will just skip through it.
+             */
+            handleMENUUIConfirmFinalOption();
+            handleMENUUIEnemySelect();
+            handleMENUUIButtonSelect();
+        }
+
+            private void handleMENUUIConfirmFinalOption() {
+                if(!interactiveButton.wentIntoButton || (buttons[currentSelectedButton].needsSelectedEnemy && !interactiveButton.hasSelectedEnemy)) return;
+
+                deselectButtons();
+                buttons[currentSelectedButton].hideOptions();
+                fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact(), player);
+            }
+
+            private void handleMENUUIEnemySelect() {
+                if(!interactiveButton.wentIntoButton || !buttons[currentSelectedButton].needsSelectedEnemy) return;
+
+                interactiveButton.hasSelectedEnemy = true;
+                buttons[currentSelectedButton].actionAfterEnemySelected();
+                movePlayerToTextOption(0);
+            }
+
+            private void handleMENUUIButtonSelect() {
+                if(interactiveButton.wentIntoButton || !(currentSelectedButton>=0)) return;
+
+                if(currentSelectedButton==2 && itemButton.noItemsLeft()) {
+                    globals.buttonConfirmSound.play();
+                    return;
+                }
+
+                buttons[currentSelectedButton].openButton();
+                interactiveButton.wentIntoButton = true;
+                interactiveButton.hasSelectedEnemy = false;
+                fb.setCurrentTextVisible(false);
+                movePlayerToTextOption(0);
+            }
+
+
+
+        private void handleMENUUserInputBack() {
+            if(!userInputBack()) return;
+
+            handleMENUUIBackReselectButton();
+            handleMENUUIBackReselectEnemy();
+        }
+
+            private void handleMENUUIBackReselectEnemy() {
+                if((!interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy) || currentSelectedButton<=0 || !buttons[currentSelectedButton].needsSelectedEnemy) return;
+
+                interactiveButton.hasSelectedEnemy = false;
+                buttons[currentSelectedButton].openButton();
+                interactiveButton.wentIntoButton = true;
+                fb.setCurrentTextVisible(false);
+                movePlayerToTextOption(buttons[currentSelectedButton].getSelectedEnemy());
+            }
+
+            private void handleMENUUIBackReselectButton() {
+                if(!interactiveButton.wentIntoButton || (interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy)) return;
+
+                interactiveButton.wentIntoButton = false;
+                buttons[currentSelectedButton].resetSelectedEnemy();
+                buttons[currentSelectedButton].hideOptions();
+                movePlayerToButton(currentSelectedButton);
+                fb.setCurrentTextVisible(true);
+            }
+
+    //      --  Menu State end    --  //
+
+
+
+    //      --  Gone State start    --  //
+
+    private void handleGoneState() {
+        if(!player.getState().equals("gone")) return;
+
+        if(userInputSelect()) {
+            if(fb.hasFinishedDialog()) finishPlayerMove();
+        }
+        else if(userInputBack()) {
+            if(!fb.hasFinishedDialog()) fb.skipDialog();
+        }
+    }
+
+    //      --  Gone State end    --  //
+
+
+
+    //      --  Gravity State start    --  //
+
+    private void handleGravityState() {
+        if(!player.getState().equals("gravity")) return;
+
+        if(userInputTop()) {
+            if(!wTimer && !player.isJumping) {
+                wTimer = true;
+                Timeline wTimeline = new Timeline(
+                        new KeyFrame(Duration.millis(600), e -> wTimer = false)
+                );
+                wTimeline.play();
+            }
+        }
+    }
+
+    //      --  Gravity State end    --  //
+
+
+
+    //      --  User input start    --  //
+
     public static boolean userInputTop() {
         return keysPressed.contains("W") || keysPressed.contains("UP");
     }
@@ -586,4 +724,6 @@ public class Main extends Application {
     }
 
     public static boolean userInputSelect() {return keysPressed.contains("Z") || keysPressed.contains("ENTER");}
+
+    //      --  User input end    --  //
 }

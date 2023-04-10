@@ -20,6 +20,7 @@ public class itemButton extends interactiveButton {
 
     public itemButton(Player player) {
         super(globals.itemButton, globals.itemButtonSelected);
+        needsSelectedEnemy = false;
 
         items.add(new Item("Butterscotch Pie", 99));
         items.add(new Item("Legendary Hero", 40));
@@ -145,7 +146,7 @@ public class itemButton extends interactiveButton {
 
 
     @Override
-    public void selectInteraction(String direction, Player player) {
+    public void selectInteraction(String direction, Player player, int i) {
         switch (direction) {
             case "up" -> {
                 if(option >= 2) {

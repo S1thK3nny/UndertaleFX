@@ -13,6 +13,7 @@ public class mercyButton extends interactiveButton {
     //HOW WILL I DO IT FOR THE ITEMS BUTTON? NO IDEA
     public mercyButton(double playerWidth) {
         super(globals.mercyButton, globals.mercyButtonSelected);
+        needsSelectedEnemy = true;
 
         t = new Text("* Spare");
         t2 = new Text("* Flee");

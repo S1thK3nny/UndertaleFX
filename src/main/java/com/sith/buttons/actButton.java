@@ -1,41 +1,57 @@
 package com.sith.buttons;
 
+import com.sith.Main;
 import com.sith.globals;
 import javafx.scene.text.Text;
 
 public class actButton extends interactiveButton {
-    Text t;
-    Text t1;
-    Text t2;
-    Text t3;
+    double playerWidth;
 
     public actButton(double playerWidth) {
         super(globals.actButton, globals.actButtonSelected);
-
-        t = new Text("* Check");
-        t1 = new Text("* Threaten");
-        t2 = new Text("* Plan");
-        t3 = new Text("* Prepare");
-        texts.add(t);
-        texts.add(t1);
-        texts.add(t2);
-        texts.add(t3);
-
-        configureText(playerWidth);
-
-        firstRow.getChildren().addAll(t,t2);
-        secondRow.getChildren().addAll(t1, t3);
+        needsSelectedEnemy = true;
+        this.playerWidth = playerWidth;
+        updateEnemies();
     }
 
     @Override
     public void openButton() {
         super.openButton();
-        System.out.println("No functionality yet...");
+        updateEnemies();
     }
 
     public String interact() {
         super.interact();
         if(option>=texts.size() || option<0) return super.interact();
-        return "* You tried to " + texts.get(option).getText().substring(2) + "\n* ...we will see how that turns out!";
+        return "* " + Main.enemies.get(selectedEnemy).playerActed(option);
+        //return "* You tried to " + texts.get(option).getText().substring(2) + "\n* ...we will see how that turns out!";
+    }
+
+    @Override
+    public void actionAfterEnemySelected() {
+        super.actionAfterEnemySelected();
+        texts.clear();
+        for(int i = 0; i< Main.enemies.get(selectedEnemy).getActOptions().size(); i++) {
+            Text t = new Text("* " + Main.enemies.get(selectedEnemy).getActOptions().get(i));
+            texts.add(t);
+        }
+
+        firstRow.getChildren().clear();
+        secondRow.getChildren().clear();
+
+        for (int i = 0; i < texts.size(); i++) {
+            if (i % 2 == 0) {
+                firstRow.getChildren().add(texts.get(i));
+            } else {
+                secondRow.getChildren().add((texts.get(i)));
+            }
+        }
+        configureText(playerWidth);
+
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
