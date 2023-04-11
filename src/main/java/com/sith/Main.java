@@ -168,7 +168,7 @@ public class Main extends Application {
         DO NOT SPAWN ENEMIES BEFORE ANYTHING OF THIS HAPPENED
          */
         setupEnemyBox();
-        if (DEVELOPER_MODE) enemiesBox.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(2))));
+        if (DEVELOPER_MODE) enemiesBox.setBorder(new Border(new BorderStroke(Color.WHITE, BorderStrokeStyle.SOLID, null, new BorderWidths(1))));
         for (Enemy enemy : enemies) {
             enemiesBox.getChildren().add(enemy);
         }
@@ -396,7 +396,7 @@ public class Main extends Application {
 
     private void movePlayerToButton(int buttonID) {
         //You want advice? Don't touch this ever again.
-        Platform.runLater(() ->         player.movePlayer(buttons[buttonID].getLayoutX() + buttons[buttonID].getWidth()/6.5 - player.getWidth()/2 + horizontalButtonAlignment.getLayoutX(), horizontalButtonAlignment.getLayoutY() + buttons[0].getHeight()/2 - player.getHeight()/2));
+        Platform.runLater(() -> player.movePlayer(buttons[buttonID].getLayoutX() + buttons[buttonID].getWidth()/6.5 - player.getWidth()/2 + horizontalButtonAlignment.getLayoutX(), horizontalButtonAlignment.getLayoutY() + buttons[0].getHeight()/2 - player.getHeight()/2));
 
     }
 
@@ -416,7 +416,7 @@ public class Main extends Application {
         buttons[currentSelectedButton].resetSelectedEnemy();
         deselectButtons();
         buttons[currentSelectedButton].hideOptions();
-        player.movePlayer(fb.getX() + fb.getWidth()/2 - 22.5, fb.getY() + fb.getHeight()/2 - 22.5);
+        player.movePlayer(fb.getX() + fb.getWidth()/2 - player.getWidth()/2, fb.getY() + fb.getHeight()/2 - player.getHeight()/2);
         fb.setCurrentTextVisible(false);
     }
 

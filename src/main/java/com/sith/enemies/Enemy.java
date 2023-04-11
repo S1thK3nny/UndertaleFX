@@ -1,5 +1,6 @@
 package com.sith.enemies;
 
+import com.sith.globals;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -15,6 +16,10 @@ public class Enemy extends Rectangle {
     protected int atk;
     protected int def;
     protected String checkDescription;
+    protected boolean canBeSpared = false;
+
+    private final Pane root;
+    private final ArrayList<Enemy> enemies;
 
     public Enemy(Pane root, ArrayList<Enemy> enemies, HBox enemiesBox, Image[] sprites, String name, int atk, int def) {
         this.name = name;
@@ -30,6 +35,9 @@ public class Enemy extends Rectangle {
         setFill(new ImagePattern(sprites[0]));
         setWidth(sprites[0].getWidth() *1.5);
         setHeight(sprites[0].getHeight() *1.5);
+
+        this.root = root;
+        this.enemies = enemies;
 
         root.getChildren().add(this);
         enemies.add(this);
@@ -87,7 +95,15 @@ public class Enemy extends Rectangle {
         }
     }
 
-    public void setCheckDescription(String checkDescription) {
-        this.checkDescription = checkDescription;
+    public boolean canBeSpared() {
+        return canBeSpared;
+    }
+
+    public void spareEnemy() {
+        root.getChildren().remove(this);
+        enemies.remove(this);
+        globals.vaporizedSound.play();
+        setOpacity(0.5);
+        //Still missing the spare visual effect
     }
 }

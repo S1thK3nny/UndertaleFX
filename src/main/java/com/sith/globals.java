@@ -40,6 +40,7 @@ public class globals {
     public static final AudioClip charAppearSound = new AudioClip(new File("./src/main/resources/sounds/snd_char.wav").toURI().toString());
     public static final AudioClip healSound = new AudioClip(new File("./src/main/resources/sounds/snd_heal_c.wav").toURI().toString());
     public static final AudioClip levelUpSound = new AudioClip(new File("./src/main/resources/sounds/snd_levelup.wav").toURI().toString());
+    public static final AudioClip vaporizedSound = new AudioClip(new File("./src/main/resources/sounds/snd_vaporized.wav").toURI().toString());
     public static final Media surpriseSound = new Media(new File("./src/main/resources/sounds/snd_dumbvictory.wav").toURI().toString());
 
     /*Music

@@ -72,6 +72,7 @@ public class Dummy extends Enemy {
 
         isSad = false;
         isGlad = false;
+        canBeSpared = false;
 
         mood = "";
 
@@ -86,9 +87,11 @@ public class Dummy extends Enemy {
 
         if(thisMakesHimGlad) {
             isGlad = true;
+            canBeSpared = true;
         }
         else {
             isSad = true;
+            canBeSpared = false;
         }
 
         setFill(new ImagePattern(sprites[spriteNormal]));
