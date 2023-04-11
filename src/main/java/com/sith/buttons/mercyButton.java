@@ -65,11 +65,13 @@ public class mercyButton extends interactiveButton {
                 if (enemy.canBeSpared()) {
                     enemy.spareEnemy();
                     Main.enemies.remove(enemy);
+                    //This...this is a workaround. Please please please do not try to find a better solution.
+                    Main.fb.skipDialog();
+                    return "* Congratulations on sparing someone!";
                 }
             }
-            //This...this is a workaround. Please please please do not try to find a better solution.
             Main.fb.skipDialog();
-            return "* Congratulations on sparing someone!";
+            return "* No one to spare...";
         }
         else {
             //I swear this is genius, but I hate myself so much for doing this.
