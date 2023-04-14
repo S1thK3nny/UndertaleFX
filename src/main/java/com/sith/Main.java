@@ -411,15 +411,24 @@ public class Main extends Application {
 
 
 
+    private void movePlayerToCenter() {
+        Platform.runLater(() -> player.movePlayer(fb.getX() + fb.getWidth()/2 - player.getWidth()/2, fb.getY() + fb.getHeight()/2 - player.getHeight()/2));
+    }
+
+
+
     public void finishPlayerMove() {
-        player.setState("normal");
-        interactiveButton.wentIntoButton = false;
-        interactiveButton.hasSelectedEnemy = false;
-        buttons[currentSelectedButton].resetSelectedEnemy();
-        deselectButtons();
-        buttons[currentSelectedButton].hideOptions();
-        player.movePlayer(fb.getX() + fb.getWidth()/2 - player.getWidth()/2, fb.getY() + fb.getHeight()/2 - player.getHeight()/2);
-        fb.setCurrentTextVisible(false);
+        //The Platform.runLater() is ABSOLUTELY NECESSARY. DO NOT REMOVE UNDER ANY CIRCUMSTANCES
+        Platform.runLater(() -> {
+            fb.setCurrentTextVisible(false);
+            player.setState("normal");
+            player.setWentIntoButton(false);
+            interactiveButton.hasSelectedEnemy = false;
+            buttons[currentSelectedButton].getResetSelectedEnemy();
+            deselectButtons();
+            buttons[currentSelectedButton].hideOptions();
+            movePlayerToCenter();
+        });
     }
 
 
@@ -555,7 +564,7 @@ public class Main extends Application {
     }
 
         private void handleMENUOptionSelect() {
-            if((!interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy) || !interactiveButton.wentIntoButton) return;
+            if((!interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy) || !player.getWentIntoButton()) return;
 
             if(userInputRight()) {
                 buttons[currentSelectedButton].selectInteraction("right", player, buttons[currentSelectedButton].getOption());
@@ -572,7 +581,7 @@ public class Main extends Application {
         }
 
         private void handleMENUEnemySelect() {
-            if(!interactiveButton.wentIntoButton || !buttons[currentSelectedButton].needsSelectedEnemy || interactiveButton.hasSelectedEnemy) return;
+            if(!player.getWentIntoButton() || !buttons[currentSelectedButton].needsSelectedEnemy || interactiveButton.hasSelectedEnemy) return;
 
             if(userInputRight()) {
                 buttons[currentSelectedButton].selectInteraction("right", player, buttons[currentSelectedButton].getSelectedEnemy());
@@ -589,7 +598,7 @@ public class Main extends Application {
         }
 
         private void handleMENUButtonSelect() {
-            if(interactiveButton.wentIntoButton) return;
+            if(player.getWentIntoButton()) return;
 
             if(userInputRight()) {
                 selectButton(true);
@@ -613,16 +622,24 @@ public class Main extends Application {
         }
 
             private void handleMENUUIConfirmFinalOption() {
-                if(!interactiveButton.wentIntoButton || (buttons[currentSelectedButton].needsSelectedEnemy && !interactiveButton.hasSelectedEnemy)) return;
+                if(!player.getWentIntoButton() || (buttons[currentSelectedButton].needsSelectedEnemy && !interactiveButton.hasSelectedEnemy)) return;
 
                 deselectButtons();
                 buttons[currentSelectedButton].hideOptions();
-                fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact());
-                player.setState("gone");
+                if(buttons[currentSelectedButton].getWantsToReturnText()) {
+                    fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact());
+                    player.setState("gone");
+                }
+                else {
+                    buttons[currentSelectedButton].interact();
+                    fb.setCurrentTextVisible(false);
+                    fb.skipDialog();
+                    finishPlayerMove();
+                }
             }
 
             private void handleMENUUIEnemySelect() {
-                if(!interactiveButton.wentIntoButton || !buttons[currentSelectedButton].needsSelectedEnemy) return;
+                if(!player.getWentIntoButton() || !buttons[currentSelectedButton].needsSelectedEnemy) return;
 
                 interactiveButton.hasSelectedEnemy = true;
                 buttons[currentSelectedButton].actionAfterEnemySelected();
@@ -630,7 +647,7 @@ public class Main extends Application {
             }
 
             private void handleMENUUIButtonSelect() {
-                if(interactiveButton.wentIntoButton || !(currentSelectedButton>=0)) return;
+                if(player.getWentIntoButton() || !(currentSelectedButton>=0)) return;
 
                 if(currentSelectedButton==2 && itemButton.noItemsLeft()) {
                     Globals.buttonConfirmSound.play();
@@ -638,7 +655,7 @@ public class Main extends Application {
                 }
 
                 buttons[currentSelectedButton].openButton();
-                interactiveButton.wentIntoButton = true;
+                player.setWentIntoButton(true);
                 interactiveButton.hasSelectedEnemy = false;
                 fb.setCurrentTextVisible(false);
                 movePlayerToTextOption(0);
@@ -658,16 +675,16 @@ public class Main extends Application {
 
                 interactiveButton.hasSelectedEnemy = false;
                 buttons[currentSelectedButton].openButton();
-                interactiveButton.wentIntoButton = true;
+                player.setWentIntoButton(true);
                 fb.setCurrentTextVisible(false);
                 movePlayerToTextOption(buttons[currentSelectedButton].getSelectedEnemy());
             }
 
             private void handleMENUUIBackReselectButton() {
-                if(!interactiveButton.wentIntoButton || (interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy)) return;
+                if(!player.getWentIntoButton() || (interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy)) return;
 
-                interactiveButton.wentIntoButton = false;
-                buttons[currentSelectedButton].resetSelectedEnemy();
+                player.setWentIntoButton(false);
+                buttons[currentSelectedButton].getResetSelectedEnemy();
                 buttons[currentSelectedButton].hideOptions();
                 movePlayerToButton(currentSelectedButton);
                 fb.setCurrentTextVisible(true);

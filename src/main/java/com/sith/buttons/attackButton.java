@@ -7,7 +7,7 @@ public class attackButton extends interactiveButton {
     public attackButton() {
         super(Globals.attackButton, Globals.attackButtonSelected);
         needsSelectedEnemy = true;
-
+        wantsToReturnTextAfterUsage = false;
     }
 
     @Override

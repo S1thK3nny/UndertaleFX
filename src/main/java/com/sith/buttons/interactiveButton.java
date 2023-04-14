@@ -13,9 +13,9 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 
 public abstract class interactiveButton extends Rectangle {
-    public static boolean wentIntoButton = false;
     public static boolean hasSelectedEnemy = false;
     public boolean needsSelectedEnemy = false;
+    protected boolean wantsToReturnTextAfterUsage = true;
     protected boolean selected = false;
     protected HBox options;
     protected VBox firstRow = new VBox();
@@ -133,8 +133,12 @@ public abstract class interactiveButton extends Rectangle {
         return selectedEnemy;
     }
 
-    public void resetSelectedEnemy() {
+    public void getResetSelectedEnemy() {
         selectedEnemy = 0;
+    }
+
+    public boolean getWantsToReturnText() {
+        return wantsToReturnTextAfterUsage;
     }
 
     public void selectInteraction(String direction, Player player, int menu) {
@@ -174,7 +178,7 @@ public abstract class interactiveButton extends Rectangle {
             }
         }
 
-        if(wentIntoButton) {
+        if(player.getWentIntoButton()) {
             if(!needsSelectedEnemy || hasSelectedEnemy) {
                 option = menu;
             }

@@ -30,6 +30,7 @@ public class mercyButton extends interactiveButton {
         configureText(playerWidth);
 
         firstRow.getChildren().addAll(t, t2);
+        wantsToReturnTextAfterUsage = false;
     }
 
     @Override
@@ -65,17 +66,12 @@ public class mercyButton extends interactiveButton {
                 if (enemy.canBeSpared()) {
                     enemy.spareEnemy();
                     Main.enemies.remove(enemy);
-                    //This...this is a workaround. Please please please do not try to find a better solution.
-                    Main.fb.skipDialog();
                     return "* Congratulations on sparing someone!";
                 }
             }
-            Main.fb.skipDialog();
             return "* No one to spare...";
         }
         else {
-            //I swear this is genius, but I hate myself so much for doing this.
-            Main.fb.skipDialog();
             return "* You feel tired, maybe fleeing is not \n  the best option right now";
         }
     }

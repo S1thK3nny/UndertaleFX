@@ -22,6 +22,8 @@ public class Player extends Rectangle {
     boolean isMoving = false;
     boolean isJumping = false;
 
+    private boolean wentIntoButton;
+
     public boolean isInvincible() {
         return invincible;
     }
@@ -29,11 +31,12 @@ public class Player extends Rectangle {
     boolean invincible = false;
 
     private final String name = "CHARA";
+    String state = "normal";
+
     private int LV = 7;
     private int maxHealth;
     private int curHealth;
 
-    String state = "normal";
 
     public Player(double x, double y, double width, double height) {
         super(x, y, width, height);
@@ -205,6 +208,15 @@ public class Player extends Rectangle {
             Globals.hurtSound.play();
             hitEffect();
         }
+    }
+
+    public boolean getWentIntoButton() {
+        return wentIntoButton;
+    }
+
+    public void setWentIntoButton(boolean wentIntoButton) {
+        this.wentIntoButton = wentIntoButton;
+        System.out.println("wentIntoButton: " + this.wentIntoButton);
     }
 
     public void hitEffect() {
