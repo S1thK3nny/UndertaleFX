@@ -12,6 +12,7 @@ public class Dummy extends Enemy {
 
     boolean isSad = false;
     boolean isGlad = false;
+    int gladCounter = 0;
     String mood = "";
 
     public Dummy(Pane root, ArrayList<Enemy> enemies, HBox enemiesBox, String name, int atk, int def) {
@@ -35,7 +36,7 @@ public class Dummy extends Enemy {
             return makeHimNeutral(5,  "You say that he smells of oldness \n* He is confused");
         }
         else if(!isSad) {
-            return makeHimSadOrGlad("SAD ", false, 4, 5, "* He is, indeed, sad", "Apologize", "You tell " + name + " that he's just a puppet. \n* You made him sad! ");
+            return makeHimSadOrGlad("SAD ", false, 4, 5, "* He is, indeed, sad", "Apologize", "You tell " + name + " that he's just a puppet \n* You made him sad! ");
 
         }
         else {
@@ -60,7 +61,13 @@ public class Dummy extends Enemy {
             return makeHimSadOrGlad("GLAD ", true, 2, 3, "* He is, indeed, glad", "Compliment", "You tell him his hair looks great \n* No one has said that to him before!");
         }
         else {
-            return "He's too happy to hear you";
+            if(gladCounter<3) {
+                gladCounter++;
+                return "He's too happy to hear you";
+            }
+            else {
+                return "Okay, you can stop now\n* Really";
+            }
         }
     }
 
@@ -88,10 +95,12 @@ public class Dummy extends Enemy {
         if(thisMakesHimGlad) {
             isGlad = true;
             canBeSpared = true;
+            gladCounter++;
         }
         else {
             isSad = true;
             canBeSpared = false;
+            if(gladCounter>0) gladCounter--;
         }
 
         setFill(new ImagePattern(sprites[spriteNormal]));
