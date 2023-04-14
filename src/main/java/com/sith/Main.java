@@ -178,7 +178,7 @@ public class Main extends Application {
 
 
 
-        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, player.collisionBox, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions(), enemiesBox);
+        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions(), enemiesBox);
 
 
 
@@ -202,7 +202,7 @@ public class Main extends Application {
         // start animation timer to update everything necessary start
         new AnimationTimer() {
             public void handle(long currentNanoTime) {
-                if (!player.getState().equals("menu")) {
+                if (!(player.getState() == Player.State.MENU)) {
                     atLeftBorder = player.getX() < fb.getX() + player.getWidth() / 6;
                     atRightBorder = player.getX() > (fb.getX() + fb.getWidth()) - (player.getWidth() + player.getWidth() / 6);
                     atTopBorder = player.getY() < fb.getY() + player.getHeight() / 6;
@@ -421,7 +421,7 @@ public class Main extends Application {
         //The Platform.runLater() is ABSOLUTELY NECESSARY. DO NOT REMOVE UNDER ANY CIRCUMSTANCES
         Platform.runLater(() -> {
             fb.setCurrentTextVisible(false);
-            player.setState("normal");
+            player.setState(Player.State.NORMAL);
             player.setWentIntoButton(false);
             interactiveButton.hasSelectedEnemy = false;
             buttons[currentSelectedButton].getResetSelectedEnemy();
@@ -434,7 +434,7 @@ public class Main extends Application {
 
 
     public void enterMenu() {
-        player.setState("menu");
+        player.setState(Player.State.MENU);
         currentSelectedButton = 0;
         movePlayerToButton(currentSelectedButton);
         buttons[currentSelectedButton].select(buttons);
@@ -513,7 +513,7 @@ public class Main extends Application {
         }
 
         private void handleDEVEnterMenu() {
-            if (player.state.equals("normal")) {
+            if (player.getState() == Player.State.NORMAL) {
                 enterMenu();
             } else {
                 finishPlayerMove();
@@ -549,7 +549,7 @@ public class Main extends Application {
     //      --  Menu State start    --  //
 
     private void handleMenuState() {
-        if(!player.getState().equals("menu")) return;
+        if(!(player.getState() == Player.State.MENU)) return;
 
         /*This HAS to be in a reverse order of how it should look in game.
         If not, when choosing Enemy or Option the ButtonSelect() will also work and thus mess up which option you choose (e.g. go two to the right when you press right once).
@@ -564,36 +564,36 @@ public class Main extends Application {
     }
 
         private void handleMENUOptionSelect() {
-            if((!interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy) || !player.getWentIntoButton()) return;
+            if((!interactiveButton.hasSelectedEnemy && buttons[currentSelectedButton].needsSelectedEnemy) || !player.getWentIntoButton() || currentSelectedButton==0) return;
 
-            if(userInputRight()) {
-                buttons[currentSelectedButton].selectInteraction("right", player, buttons[currentSelectedButton].getOption());
+            if(userInputTop()) {
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.UP, player, buttons[currentSelectedButton].getOption());
             }
             else if(userInputLeft()) {
-                buttons[currentSelectedButton].selectInteraction("left", player, buttons[currentSelectedButton].getOption());
-            }
-            else if(userInputTop()) {
-                buttons[currentSelectedButton].selectInteraction("up", player, buttons[currentSelectedButton].getOption());
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.LEFT, player, buttons[currentSelectedButton].getOption());
             }
             else if(userInputDown()) {
-                buttons[currentSelectedButton].selectInteraction("down", player, buttons[currentSelectedButton].getOption());
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.DOWN, player, buttons[currentSelectedButton].getOption());
+            }
+            else if(userInputRight()) {
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.RIGHT, player, buttons[currentSelectedButton].getOption());
             }
         }
 
         private void handleMENUEnemySelect() {
             if(!player.getWentIntoButton() || !buttons[currentSelectedButton].needsSelectedEnemy || interactiveButton.hasSelectedEnemy) return;
 
-            if(userInputRight()) {
-                buttons[currentSelectedButton].selectInteraction("right", player, buttons[currentSelectedButton].getSelectedEnemy());
+            if(userInputTop()) {
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.UP, player, buttons[currentSelectedButton].getSelectedEnemy());
             }
             else if(userInputLeft()) {
-                buttons[currentSelectedButton].selectInteraction("left", player, buttons[currentSelectedButton].getSelectedEnemy());
-            }
-            else if(userInputTop()) {
-                buttons[currentSelectedButton].selectInteraction("up", player, buttons[currentSelectedButton].getSelectedEnemy());
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.LEFT, player, buttons[currentSelectedButton].getSelectedEnemy());
             }
             else if(userInputDown()) {
-                buttons[currentSelectedButton].selectInteraction("down", player, buttons[currentSelectedButton].getSelectedEnemy());
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.DOWN, player, buttons[currentSelectedButton].getSelectedEnemy());
+            }
+            else if(userInputRight()) {
+                buttons[currentSelectedButton].selectInteraction(interactiveButton.Directions.RIGHT, player, buttons[currentSelectedButton].getSelectedEnemy());
             }
         }
 
@@ -628,7 +628,7 @@ public class Main extends Application {
                 buttons[currentSelectedButton].hideOptions();
                 if(buttons[currentSelectedButton].getWantsToReturnText()) {
                     fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact());
-                    player.setState("gone");
+                    player.setState(Player.State.GONE);
                 }
                 else {
                     buttons[currentSelectedButton].interact();
@@ -643,7 +643,7 @@ public class Main extends Application {
 
                 interactiveButton.hasSelectedEnemy = true;
                 buttons[currentSelectedButton].actionAfterEnemySelected();
-                movePlayerToTextOption(0);
+                if(currentSelectedButton!=0) movePlayerToTextOption(0);
             }
 
             private void handleMENUUIButtonSelect() {
@@ -697,7 +697,7 @@ public class Main extends Application {
     //      --  Gone State start    --  //
 
     private void handleGoneState() {
-        if(!player.getState().equals("gone")) return;
+        if(!(player.getState() == Player.State.GONE)) return;
 
         if(userInputSelect()) {
             if(fb.hasFinishedDialog()) finishPlayerMove();
@@ -714,7 +714,7 @@ public class Main extends Application {
     //      --  Gravity State start    --  //
 
     private void handleGravityState() {
-        if(!player.getState().equals("gravity")) return;
+        if(!(player.getState() == Player.State.GRAVITY)) return;
 
         if(userInputTop()) {
             if(!wTimer && !player.isJumping) {

@@ -13,6 +13,14 @@ import javafx.scene.text.Text;
 import java.util.ArrayList;
 
 public abstract class interactiveButton extends Rectangle {
+
+    public enum Directions {
+        UP,
+        LEFT,
+        DOWN,
+        RIGHT
+    }
+
     public static boolean hasSelectedEnemy = false;
     public boolean needsSelectedEnemy = false;
     protected boolean wantsToReturnTextAfterUsage = true;
@@ -141,10 +149,10 @@ public abstract class interactiveButton extends Rectangle {
         return wantsToReturnTextAfterUsage;
     }
 
-    public void selectInteraction(String direction, Player player, int menu) {
+    public void selectInteraction(Directions direction, Player player, int menu) {
 
         switch (direction) {
-            case "up" -> {
+            case UP -> {
                 if(menu >= 2) {
                     Globals.switchCurrentElementSound.play();
                     menu -= 2;
@@ -154,13 +162,13 @@ public abstract class interactiveButton extends Rectangle {
                     --menu;
                 }
             }
-            case "left" -> {
+            case LEFT -> {
                 if(menu > 0) {
                     Globals.switchCurrentElementSound.play();
                     --menu;
                 }
             }
-            case "down" -> {
+            case DOWN -> {
                 if(menu+2 < getTexts().size()) {
                     Globals.switchCurrentElementSound.play();
                     menu +=2;
@@ -170,7 +178,7 @@ public abstract class interactiveButton extends Rectangle {
                     ++menu;
                 }
             }
-            case "right" -> {
+            case RIGHT -> {
                 if(menu < getTexts().size()-1 ) {
                     Globals.switchCurrentElementSound.play();
                     ++menu;
@@ -178,13 +186,11 @@ public abstract class interactiveButton extends Rectangle {
             }
         }
 
-        if(player.getWentIntoButton()) {
-            if(!needsSelectedEnemy || hasSelectedEnemy) {
-                option = menu;
-            }
-            else {
-                selectedEnemy = menu;
-            }
+        if(!needsSelectedEnemy || hasSelectedEnemy) {
+            option = menu;
+        }
+        else {
+            selectedEnemy = menu;
         }
 
         player.movePlayer(getTextX(menu, player.getWidth()), getTextY(menu, player.getHeight()));

@@ -31,9 +31,12 @@ public class Globals {
     public static final Image itemButtonSelected = new Image("file:./src/main/resources/images/buttons/spr_itembt_1.png");
     public static final Image mercyButtonSelected = new Image("file:./src/main/resources/images/buttons/spr_sparebt_1.png");
 
-    //Dust
-    public static final Image dustCloud = new Image("file:./src/main/resources/images/spr_dustcloud_1.png");
-    public static final Image dustCloudAlmostGone = new Image("file:./src/main/resources/images/spr_dustcloud_2.png");
+    //Battle
+    public static final Image battleDustCloud = new Image("file:./src/main/resources/images/battle/spr_dustcloud_1.png");
+    public static final Image battleDustCloudAlmostGone = new Image("file:./src/main/resources/images/battle/spr_dustcloud_2.png");
+    public static final Image battleSlider = new Image("file:./src/main/resources/images/battle/spr_targetchoice_0.png");
+    public static final Image battleSliderPressed = new Image("file:./src/main/resources/images/battle/spr_targetchoice_1.png");
+    public static final Image battleTarget = new Image("file:./src/main/resources/images/battle/spr_target_0.png");
 
     /*Sounds
     NOTE: OGG FILES ARE NOT SUPPORTED!

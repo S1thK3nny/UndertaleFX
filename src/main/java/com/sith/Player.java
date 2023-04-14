@@ -2,7 +2,6 @@ package com.sith;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
@@ -14,11 +13,16 @@ import static com.sith.Main.userInputRight;
 import static com.sith.Main.userInputBack;
 
 public class Player extends Rectangle {
-    Rectangle collisionBox;
+
+    public enum State {
+        NORMAL,
+        GRAVITY,
+        GONE,
+        MENU
+    }
 
     private static final double MOVE_AMOUNT = 3; // how many pixels to move each time
     private static final double GRAVITY_AMOUNT = 3.5; // how many pixels to fall each time
-    boolean showingCollision = false;
     boolean isMoving = false;
     boolean isJumping = false;
 
@@ -31,18 +35,17 @@ public class Player extends Rectangle {
     boolean invincible = false;
 
     private final String name = "CHARA";
-    String state = "normal";
+    Enum<State> state = State.NORMAL;
 
     private int LV = 7;
     private int maxHealth;
     private int curHealth;
 
 
+
     public Player(double x, double y, double width, double height) {
         super(x, y, width, height);
-        addCollisionBox();
         setFill(new ImagePattern(Globals.redHeart));
-
         setupHealth();
     }
 
@@ -73,7 +76,7 @@ public class Player extends Rectangle {
 
         // update velocity based on which keys are pressed
 
-        if (userInputTop() && !borders[2] && state.equals("normal")) {
+        if (userInputTop() && !borders[2] && state == State.NORMAL) {
             vy = -MOVE_AMOUNT;
         } else if (userInputDown() && !borders[3]) {
             vy = MOVE_AMOUNT;
@@ -95,7 +98,7 @@ public class Player extends Rectangle {
             vx /= 2;
         }
 
-        if(state.equals("gravity")) {
+        if(state == State.GRAVITY) {
             if(borders[2]) wTimer = false;
             if(userInputTop() && !borders[2] && !isJumping && wTimer) {
                 vy = -GRAVITY_AMOUNT;
@@ -110,8 +113,6 @@ public class Player extends Rectangle {
         // update player position based on velocity
         setX(Math.min(Math.max(getX() + vx, 0), sceneWidth - getWidth()));
         setY(Math.min(Math.max(getY() + vy, 0), sceneHeight - getHeight()));
-        collisionBox.setX(getX());
-        collisionBox.setY(getY());
 
         if(!(userInputTop() && userInputLeft() && userInputDown() && userInputRight())) {
             isMoving = false;
@@ -124,24 +125,6 @@ public class Player extends Rectangle {
             // player has landed on the ground
             isJumping = false;
         }
-    }
-
-    public void drawCollision() {
-        if(showingCollision) {
-            collisionBox.setStroke(Color.TRANSPARENT);
-            showingCollision = false;
-        }
-        else {
-            collisionBox.setStroke(Color.WHITE);
-            showingCollision = true;
-        }
-    }
-
-    public void addCollisionBox() {
-        collisionBox = new Rectangle(getX(), getY(), getBoundsInLocal().getWidth(), getBoundsInLocal().getHeight());
-        collisionBox.setFill(Color.TRANSPARENT);
-        collisionBox.setStroke(Color.TRANSPARENT);
-        collisionBox.setStrokeWidth(3);
     }
 
     public void checkBounds(FightingBox fb, Boolean[] borders) {
@@ -159,29 +142,22 @@ public class Player extends Rectangle {
         }
     }
 
-    public void setState(String state) {
-        /*
-        Known states:
-        - normal
-        - gravity
-        - gone
-        - menu
-         */
+    public void setState(State state) {
         switch (state) {
-            case "normal", default -> {
+            case NORMAL, default -> {
                 setFill(new ImagePattern(Globals.redHeart));
                 setVisible(true);
             }
-            case "gravity" -> {
+            case GRAVITY -> {
                 setFill(new ImagePattern(Globals.blueHeart));
                 setVisible(true);
             }
-            case "gone" -> setVisible(false);
+            case GONE -> setVisible(false);
         }
         this.state = state;
     }
 
-    public String getState() {
+    public Enum<State> getState() {
         return state;
     }
 
@@ -216,7 +192,6 @@ public class Player extends Rectangle {
 
     public void setWentIntoButton(boolean wentIntoButton) {
         this.wentIntoButton = wentIntoButton;
-        System.out.println("wentIntoButton: " + this.wentIntoButton);
     }
 
     public void hitEffect() {
@@ -235,8 +210,6 @@ public class Player extends Rectangle {
     public void movePlayer(double x, double y) {
         setX(x);
         setY(y);
-        collisionBox.setX(x);
-        collisionBox.setY(y);
     }
 
     public void healPlayer(int healpoints) {

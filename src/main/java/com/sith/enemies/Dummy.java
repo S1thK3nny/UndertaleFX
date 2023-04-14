@@ -4,7 +4,6 @@ import com.sith.Globals;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.paint.ImagePattern;
 
 import java.util.ArrayList;
 
@@ -22,6 +21,8 @@ public class Dummy extends Enemy {
         actOptions.add("Surprise");
         actOptions.add("Compliment");
         checkDescription = "\n* A dummy of his own, different from the rest";
+
+        hp = 15;
     }
 
     @Override
@@ -83,8 +84,7 @@ public class Dummy extends Enemy {
 
         mood = "";
 
-        setFill(new ImagePattern(sprites[0]));
-        hurtVersion = sprites[1];
+        setCurrentSprite(sprites[0], sprites[1]);
 
         return returnMessage;
     }
@@ -103,8 +103,7 @@ public class Dummy extends Enemy {
             if(gladCounter>0) gladCounter--;
         }
 
-        setFill(new ImagePattern(sprites[spriteNormal]));
-        hurtVersion = sprites[spriteHurt];
+        setCurrentSprite(sprites[spriteNormal], sprites[spriteHurt]);
 
         this.mood = mood;
 

@@ -12,9 +12,12 @@ public class Enemy extends Rectangle {
     protected String name;
     protected final ArrayList<String> actOptions = new ArrayList<>();
     protected Image[] sprites;
-    protected Image hurtVersion;
+    protected Image currentSprite;
+    protected Image currentHurtSprite;
     protected int atk;
     protected int def;
+    protected int hp;
+    protected int goldOnWin;
     protected String checkDescription;
     protected boolean canBeSpared = false;
 
@@ -27,14 +30,15 @@ public class Enemy extends Rectangle {
         this.atk = atk;
         this.def = def;
 
-        hurtVersion = sprites[1];
+        currentSprite = sprites[0];
+        currentHurtSprite = sprites[1];
 
         actOptions.add("Check");
         checkDescription = "\n* A cotton heart and a button eye\n* You are the apple of my eye";
 
-        setFill(new ImagePattern(sprites[0]));
-        setWidth(sprites[0].getWidth() *1.5);
-        setHeight(sprites[0].getHeight() *1.5);
+        setFill(new ImagePattern(currentSprite));
+        setWidth(currentSprite.getWidth() *1.5);
+        setHeight(currentSprite.getHeight() *1.5);
 
         this.root = root;
         this.enemies = enemies;
@@ -57,6 +61,13 @@ public class Enemy extends Rectangle {
         return "Enemy{" +
                 "name='" + name + '\'' +
                 '}';
+    }
+
+    public void setCurrentSprite(Image currentSprite, Image currentHurtSprite) {
+        setFill(new ImagePattern(currentSprite));
+        this.currentHurtSprite = currentHurtSprite;
+        setWidth(currentSprite.getWidth() *1.5);
+        setHeight(currentSprite.getHeight() *1.5);
     }
 
     protected String actOption1() {

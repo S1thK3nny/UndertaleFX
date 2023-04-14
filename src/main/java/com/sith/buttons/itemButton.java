@@ -146,9 +146,9 @@ public class itemButton extends interactiveButton {
 
 
     @Override
-    public void selectInteraction(String direction, Player player, int i) {
+    public void selectInteraction(Directions direction, Player player, int i) {
         switch (direction) {
-            case "up" -> {
+            case UP -> {
                 if(option >= 2) {
                     Globals.switchCurrentElementSound.play();
                     option -= 2;
@@ -158,7 +158,7 @@ public class itemButton extends interactiveButton {
                     --option;
                 }
             }
-            case "left" -> {
+            case LEFT -> {
                 if(currentPage>0 && (option == 0 || option == 2)) {
                     if(option == 2 && itemPages.get(currentPage-1).size()<2) {
                         option = 3;
@@ -174,7 +174,7 @@ public class itemButton extends interactiveButton {
                     --option;
                 }
             }
-            case "down" -> {
+            case DOWN -> {
                 if(option+2 < getTexts().size()) {
                     Globals.switchCurrentElementSound.play();
                     option +=2;
@@ -184,7 +184,7 @@ public class itemButton extends interactiveButton {
                     ++option;
                 }
             }
-            case "right" -> {
+            case RIGHT -> {
                 if(currentPage<itemPages.size()-1 && (option == 1 || option == 3)) {
                     if(option == 3 && itemPages.get(currentPage+1).size()<3) {
                         option = 0;
