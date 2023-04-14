@@ -2,7 +2,7 @@ package com.sith.buttons;
 
 import com.sith.Item;
 import com.sith.Player;
-import com.sith.globals;
+import com.sith.Globals;
 import javafx.application.Platform;
 import javafx.scene.text.Text;
 
@@ -19,7 +19,7 @@ public class itemButton extends interactiveButton {
     int itemsPerPage = 4;
 
     public itemButton(Player player) {
-        super(globals.itemButton, globals.itemButtonSelected);
+        super(Globals.itemButton, Globals.itemButtonSelected);
         needsSelectedEnemy = false;
 
         items.add(new Item("Butterscotch Pie", 99));
@@ -150,11 +150,11 @@ public class itemButton extends interactiveButton {
         switch (direction) {
             case "up" -> {
                 if(option >= 2) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     option -= 2;
                 }
                 else if(option >= 1) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     --option;
                 }
             }
@@ -166,21 +166,21 @@ public class itemButton extends interactiveButton {
                     else {
                         ++option;
                     }
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     switchItemPage(currentPage-1);
                 }
                 else if(option > 0) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     --option;
                 }
             }
             case "down" -> {
                 if(option+2 < getTexts().size()) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     option +=2;
                 }
                 else if(option+1 < getTexts().size()) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     ++option;
                 }
             }
@@ -192,11 +192,11 @@ public class itemButton extends interactiveButton {
                     else {
                         --option;
                     }
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     switchItemPage(currentPage+1);
                 }
                 else if(option < getTexts().size()-1) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     ++option;
                 }
             }

@@ -7,7 +7,7 @@ import javafx.scene.text.Font;
 
 import java.io.File;
 
-public class globals {
+public class Globals {
     //Splash screen
     public static final Image splashScreen = new Image("file:./src/main/resources/images/Splash.png");
 
@@ -30,6 +30,10 @@ public class globals {
     public static final Image actButtonSelected = new Image("file:./src/main/resources/images/buttons/spr_talkbt_1.png");
     public static final Image itemButtonSelected = new Image("file:./src/main/resources/images/buttons/spr_itembt_1.png");
     public static final Image mercyButtonSelected = new Image("file:./src/main/resources/images/buttons/spr_sparebt_1.png");
+
+    //Dust
+    public static final Image dustCloud = new Image("file:./src/main/resources/images/spr_dustcloud_1.png");
+    public static final Image dustCloudAlmostGone = new Image("file:./src/main/resources/images/spr_dustcloud_2.png");
 
     /*Sounds
     NOTE: OGG FILES ARE NOT SUPPORTED!

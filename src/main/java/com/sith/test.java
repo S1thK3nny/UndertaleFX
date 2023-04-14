@@ -29,8 +29,8 @@ public class test extends Application {
         Rectangle blueHeart = new Rectangle(redHeart.getX(), redHeart.getY(), redHeart.getWidth(), redHeart.getHeight());
         Rectangle clip = new Rectangle(blueHeart.getX(), blueHeart.getY(), blueHeart.getWidth(), fill);
 
-        redHeart.setFill(new ImagePattern(globals.redHeart));
-        blueHeart.setFill(new ImagePattern(globals.blueHeart));
+        redHeart.setFill(new ImagePattern(Globals.redHeart));
+        blueHeart.setFill(new ImagePattern(Globals.blueHeart));
         clip.setFill(Color.WHITE);
 
         blueHeart.setClip(clip);

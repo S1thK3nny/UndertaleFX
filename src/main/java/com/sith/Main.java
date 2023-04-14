@@ -81,12 +81,12 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("UndertaleFX");
-        primaryStage.getIcons().add(globals.redHeart);
+        primaryStage.getIcons().add(Globals.redHeart);
         primaryStage.show();
 
         root.setBackground(new Background(
                 new BackgroundImage(
-                        globals.splashScreen,
+                        Globals.splashScreen,
                         BackgroundRepeat.NO_REPEAT,
                         BackgroundRepeat.NO_REPEAT,
                         BackgroundPosition.CENTER,
@@ -101,11 +101,11 @@ public class Main extends Application {
                 )
         ));
 
-        globals.splashScreenSound.play();
+        Globals.splashScreenSound.play();
 
         //Yes, we could use a mediaplayer, but how about we don't
         splashTimeline = new Timeline(new KeyFrame(Duration.seconds(0.1), event -> {
-            if (!globals.splashScreenSound.isPlaying()) {
+            if (!Globals.splashScreenSound.isPlaying()) {
                 splashTimeline.stop();
                 runGame(root, scene);
             }
@@ -118,7 +118,7 @@ public class Main extends Application {
 
     public void runGame(Pane root, Scene scene) {
         root.setStyle("-fx-background-color: black;");
-        MediaPlayer mediaPlayer = new MediaPlayer(globals.preBattleMusic);
+        MediaPlayer mediaPlayer = new MediaPlayer(Globals.preBattleMusic);
         mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         mediaPlayer.play();
 
@@ -173,7 +173,7 @@ public class Main extends Application {
             enemiesBox.getChildren().add(enemy);
         }
 
-        Enemy test = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "DUMMY", 0, 0);
+        new Enemy(root, enemies, enemiesBox, Globals.dummySprites, "DUMMY", 0, 0);
         //Enemies end
 
 
@@ -187,8 +187,10 @@ public class Main extends Application {
             keysPressed.add(event.getCode().toString());
 
             handleDeveloperModeKeys(root);
-            handleMenuState();
+            //The order of these two is important. 23014: Fixed the text skip after confirming final option
             handleGoneState();
+            handleMenuState();
+
             handleGravityState();
         });
 
@@ -279,8 +281,8 @@ public class Main extends Application {
 
         Text HP = new Text("HP");
         configureText(HP);
-        HP.setFont(globals.dtmSansHP);
-        HP.setTranslateY(HP.getTranslateY()+ (globals.dtmSans.getSize()-globals.dtmSansHP.getSize())/2 );
+        HP.setFont(Globals.dtmSansHP);
+        HP.setTranslateY(HP.getTranslateY()+ (Globals.dtmSans.getSize()- Globals.dtmSansHP.getSize())/2 );
 
         //HP Values
         configureText(curAndMaxHealth);
@@ -320,7 +322,7 @@ public class Main extends Application {
 
     public static void configureText(Text t) {
         t.setFill(Color.WHITE);
-        t.setFont(globals.dtmSans);
+        t.setFont(Globals.dtmSans);
         t.setTextAlignment(TextAlignment.LEFT);
     }
 
@@ -527,7 +529,7 @@ public class Main extends Application {
             if (enemies.size() > 4) {
                 enemies.clear();
                 enemiesBox.getChildren().clear();
-                Enemy newTest = new Enemy(root, enemies, enemiesBox, globals.dummySprites, "DUMMY", 0, 0);
+                new Enemy(root, enemies, enemiesBox, Globals.dummySprites, "DUMMY", 0, 0);
             }
         }
 
@@ -615,7 +617,8 @@ public class Main extends Application {
 
                 deselectButtons();
                 buttons[currentSelectedButton].hideOptions();
-                fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact(), player);
+                fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact());
+                player.setState("gone");
             }
 
             private void handleMENUUIEnemySelect() {
@@ -630,7 +633,7 @@ public class Main extends Application {
                 if(interactiveButton.wentIntoButton || !(currentSelectedButton>=0)) return;
 
                 if(currentSelectedButton==2 && itemButton.noItemsLeft()) {
-                    globals.buttonConfirmSound.play();
+                    Globals.buttonConfirmSound.play();
                     return;
                 }
 

@@ -1,14 +1,14 @@
 package com.sith.buttons;
 
 import com.sith.Main;
-import com.sith.globals;
+import com.sith.Globals;
 import javafx.scene.text.Text;
 
 public class actButton extends interactiveButton {
     double playerWidth;
 
     public actButton(double playerWidth) {
-        super(globals.actButton, globals.actButtonSelected);
+        super(Globals.actButton, Globals.actButtonSelected);
         needsSelectedEnemy = true;
         this.playerWidth = playerWidth;
         updateEnemies();

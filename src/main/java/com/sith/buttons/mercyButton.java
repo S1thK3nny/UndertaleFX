@@ -2,7 +2,7 @@ package com.sith.buttons;
 
 import com.sith.Main;
 import com.sith.enemies.Enemy;
-import com.sith.globals;
+import com.sith.Globals;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 
@@ -18,7 +18,7 @@ public class mercyButton extends interactiveButton {
      */
 
     public mercyButton(double playerWidth) {
-        super(globals.mercyButton, globals.mercyButtonSelected);
+        super(Globals.mercyButton, Globals.mercyButtonSelected);
         needsSelectedEnemy = false;
 
         t = new Text("* Spare");

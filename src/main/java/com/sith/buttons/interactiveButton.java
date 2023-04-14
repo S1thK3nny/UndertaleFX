@@ -2,7 +2,7 @@ package com.sith.buttons;
 
 import com.sith.Main;
 import com.sith.Player;
-import com.sith.globals;
+import com.sith.Globals;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -53,7 +53,7 @@ public abstract class interactiveButton extends Rectangle {
     public void setSelected(boolean selected) {
         if(selected) {
             setCurrentImage(buttonSelected);
-            globals.switchCurrentElementSound.play();
+            Globals.switchCurrentElementSound.play();
         }
         else {
             setCurrentImage(buttonNotSelected);
@@ -72,7 +72,7 @@ public abstract class interactiveButton extends Rectangle {
     }
 
     public void openButton() {
-        globals.buttonConfirmSound.play();
+        Globals.buttonConfirmSound.play();
         options.setTranslateX(Main.fb.getX()*1.5 - Main.fb.getStrokeWidth());
         options.setTranslateY(Main.fb.getY() + t.getBoundsInLocal().getHeight()/2 - Main.fb.getStrokeWidth());
         options.setVisible(true);
@@ -80,7 +80,7 @@ public abstract class interactiveButton extends Rectangle {
     }
 
     public String interact() {
-        globals.buttonConfirmSound.play();
+        Globals.buttonConfirmSound.play();
         return "* Oh no...what happened here?! " + option;
     }
 
@@ -142,33 +142,33 @@ public abstract class interactiveButton extends Rectangle {
         switch (direction) {
             case "up" -> {
                 if(menu >= 2) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     menu -= 2;
                 }
                 else if(menu >= 1) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     --menu;
                 }
             }
             case "left" -> {
                 if(menu > 0) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     --menu;
                 }
             }
             case "down" -> {
                 if(menu+2 < getTexts().size()) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     menu +=2;
                 }
                 else if(menu+1 < getTexts().size()) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     ++menu;
                 }
             }
             case "right" -> {
                 if(menu < getTexts().size()-1 ) {
-                    globals.switchCurrentElementSound.play();
+                    Globals.switchCurrentElementSound.play();
                     ++menu;
                 }
             }
@@ -214,6 +214,6 @@ public abstract class interactiveButton extends Rectangle {
 
     public void actionAfterEnemySelected() {
         option = 0;
-        globals.buttonConfirmSound.play();
+        Globals.buttonConfirmSound.play();
     }
 }

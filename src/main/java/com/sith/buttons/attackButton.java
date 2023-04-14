@@ -1,11 +1,11 @@
 package com.sith.buttons;
 
-import com.sith.globals;
+import com.sith.Globals;
 
 public class attackButton extends interactiveButton {
 
     public attackButton() {
-        super(globals.attackButton, globals.attackButtonSelected);
+        super(Globals.attackButton, Globals.attackButtonSelected);
         needsSelectedEnemy = true;
 
     }

@@ -1,6 +1,6 @@
 package com.sith.enemies;
 
-import com.sith.globals;
+import com.sith.Globals;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -102,7 +102,7 @@ public class Enemy extends Rectangle {
     public void spareEnemy() {
         root.getChildren().remove(this);
         enemies.remove(this);
-        globals.vaporizedSound.play();
+        Globals.vaporizedSound.play();
         setOpacity(0.5);
         //Still missing the spare visual effect
     }

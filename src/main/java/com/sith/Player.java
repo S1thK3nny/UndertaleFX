@@ -38,7 +38,7 @@ public class Player extends Rectangle {
     public Player(double x, double y, double width, double height) {
         super(x, y, width, height);
         addCollisionBox();
-        setFill(new ImagePattern(globals.redHeart));
+        setFill(new ImagePattern(Globals.redHeart));
 
         setupHealth();
     }
@@ -166,11 +166,11 @@ public class Player extends Rectangle {
          */
         switch (state) {
             case "normal", default -> {
-                setFill(new ImagePattern(globals.redHeart));
+                setFill(new ImagePattern(Globals.redHeart));
                 setVisible(true);
             }
             case "gravity" -> {
-                setFill(new ImagePattern(globals.blueHeart));
+                setFill(new ImagePattern(Globals.blueHeart));
                 setVisible(true);
             }
             case "gone" -> setVisible(false);
@@ -202,7 +202,7 @@ public class Player extends Rectangle {
         this.curHealth -= damage;
         Main.setHealthText(curHealth, maxHealth, damage, true);
         if(gotHit) {
-            globals.hurtSound.play();
+            Globals.hurtSound.play();
             hitEffect();
         }
     }
@@ -230,7 +230,7 @@ public class Player extends Rectangle {
     public void healPlayer(int healpoints) {
         restoreHealth(healpoints);
         Main.setHealthText(curHealth, maxHealth, healpoints, false);
-        globals.healSound.play();
+        Globals.healSound.play();
     }
 
     public void restoreHealth(int healpoints) {
@@ -245,7 +245,7 @@ public class Player extends Rectangle {
     public void increaseLV() {
         if(!(LV>=20)) {
             LV++;
-            globals.levelUpSound.play();
+            Globals.levelUpSound.play();
             setupHealth();
         }
     }

@@ -19,7 +19,7 @@ public class FightingBox extends Rectangle {
 
     private final Text currentText = new Text("* What do we have here? Let's have some fun! :)");
     String currentStringText = "* Let's get this over with...\n* Wait what?";
-    Timeline timeline;
+    Timeline timeline = new Timeline();
 
     public FightingBox(double x, double y, double width, double height) {
         super(x, y, width, height);
@@ -107,40 +107,45 @@ public class FightingBox extends Rectangle {
 
     public void setCurrentTextVisible(boolean b) {
         currentText.setVisible(b);
-        if(b) displayText(currentStringText);
-        if(!b) {
+        if(b) {
+            displayText(currentStringText);
+        }
+        else {
             //Set Text for next round
             currentStringText = "* Let's get this over with...\n* Wait what?";
             stopTextTimeline();
         }
     }
 
-    public void setCurrentTextVisible(boolean b, String s, Player player) {
+    public void setCurrentTextVisible(boolean b, String s) {
         currentText.setVisible(b);
         currentStringText = s;
         if(b) {
             displayText(s);
-            player.setState("gone");
         }
-        if(!b) stopTextTimeline();
+        else {
+            stopTextTimeline();
+        }
     }
 
     public void displayText(String s) {
         index = 0;
         currentText.setText("");
-        timeline = new Timeline(
+        timeline.getKeyFrames().clear();
+
+        timeline.getKeyFrames().add(
                 new KeyFrame(Duration.millis(35), event -> {
                     typing = true;
                     currentText.setText(currentText.getText() + s.charAt(index));
                     ++index;
-                    globals.charAppearSound.play();
-                })
-        );
+                    Globals.charAppearSound.play();
+                }));
 
         timeline.setCycleCount(s.length());
         timeline.setOnFinished(e -> typing = false);
         timeline.play();
     }
+
 
     private void stopTextTimeline() {
         timeline.stop();

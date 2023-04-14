@@ -1,6 +1,6 @@
 package com.sith.enemies;
 
-import com.sith.globals;
+import com.sith.Globals;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.MediaPlayer;
@@ -15,7 +15,7 @@ public class Dummy extends Enemy {
     String mood = "";
 
     public Dummy(Pane root, ArrayList<Enemy> enemies, HBox enemiesBox, String name, int atk, int def) {
-        super(root, enemies, enemiesBox, globals.dummySprites, name, atk, def);
+        super(root, enemies, enemiesBox, Globals.dummySprites, name, atk, def);
 
         actOptions.add("Insult");
         actOptions.add("Surprise");
@@ -35,7 +35,7 @@ public class Dummy extends Enemy {
             return makeHimNeutral(5,  "You say that he smells of oldness \n* He is confused");
         }
         else if(!isSad) {
-            return makeHimSadOrGlad("SAD ", false, 4, 5, "* He is, indeed, sad", "Apologize", "You tell " + name + "that he's just a puppet. \n* You made him sad! ");
+            return makeHimSadOrGlad("SAD ", false, 4, 5, "* He is, indeed, sad", "Apologize", "You tell " + name + " that he's just a puppet. \n* You made him sad! ");
 
         }
         else {
@@ -46,7 +46,7 @@ public class Dummy extends Enemy {
 
     @Override
     public String actOption3() {
-        MediaPlayer mediaPlayer = new MediaPlayer(globals.surpriseSound);
+        MediaPlayer mediaPlayer = new MediaPlayer(Globals.surpriseSound);
         mediaPlayer.play();
         return "Surprise!\n* ...?";
     }
