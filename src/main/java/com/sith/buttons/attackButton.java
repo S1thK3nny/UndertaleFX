@@ -67,4 +67,15 @@ public class attackButton extends interactiveButton {
 
         player.movePlayer(getTextX(menu, player.getWidth()), getTextY(menu, player.getHeight()));
     }
+
+    @Override
+    public void actionAfterEnemySelected() {
+        super.actionAfterEnemySelected();
+        options.setVisible(false);
+    }
+
+    @Override
+    public String interact() {
+        return "* Oh no...what happened here?! " + option;
+    }
 }

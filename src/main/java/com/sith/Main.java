@@ -639,7 +639,7 @@ public class Main extends Application {
             }
 
             private void handleMENUUIEnemySelect() {
-                if(!player.getWentIntoButton() || !buttons[currentSelectedButton].needsSelectedEnemy) return;
+                if(!player.getWentIntoButton() || !buttons[currentSelectedButton].needsSelectedEnemy || interactiveButton.hasSelectedEnemy) return;
 
                 interactiveButton.hasSelectedEnemy = true;
                 buttons[currentSelectedButton].actionAfterEnemySelected();
