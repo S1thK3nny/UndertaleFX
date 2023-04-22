@@ -2,7 +2,6 @@ package com.sith.enemies;
 
 import com.sith.Globals;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.media.MediaPlayer;
 
 import java.util.ArrayList;
@@ -14,8 +13,8 @@ public class Dummy extends Enemy {
     int gladCounter = 0;
     String mood = "";
 
-    public Dummy(Pane root, ArrayList<Enemy> enemies, HBox enemiesBox, String name, int atk, int def) {
-        super(root, enemies, enemiesBox, Globals.dummySprites, name, atk, def);
+    public Dummy(ArrayList<Enemy> enemies, HBox enemiesBox, String name, int atk, int def) {
+        super(enemies, enemiesBox, Globals.dummySprites, name, atk, def);
 
         actOptions.add("Insult");
         actOptions.add("Surprise");

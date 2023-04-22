@@ -8,6 +8,8 @@ import javafx.scene.text.Font;
 import java.io.File;
 
 public class Globals {
+    static final boolean DEVELOPER_MODE = true;
+
     //Splash screen
     public static final Image splashScreen = new Image("file:./src/main/resources/images/Splash.png");
 

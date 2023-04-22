@@ -3,9 +3,9 @@ package com.sith.enemies;
 import com.sith.Globals;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+
 import java.util.ArrayList;
 
 public class Enemy extends Rectangle {
@@ -21,10 +21,9 @@ public class Enemy extends Rectangle {
     protected String checkDescription;
     protected boolean canBeSpared = false;
 
-    private final Pane root;
     private final ArrayList<Enemy> enemies;
 
-    public Enemy(Pane root, ArrayList<Enemy> enemies, HBox enemiesBox, Image[] sprites, String name, int atk, int def) {
+    public Enemy(ArrayList<Enemy> enemies, HBox enemiesBox, Image[] sprites, String name, int atk, int def) {
         this.name = name;
         this.sprites = sprites;
         this.atk = atk;
@@ -40,10 +39,8 @@ public class Enemy extends Rectangle {
         setWidth(currentSprite.getWidth() *1.5);
         setHeight(currentSprite.getHeight() *1.5);
 
-        this.root = root;
         this.enemies = enemies;
 
-        root.getChildren().add(this);
         enemies.add(this);
         enemiesBox.getChildren().add(this);
     }
@@ -60,6 +57,13 @@ public class Enemy extends Rectangle {
     public String toString() {
         return "Enemy{" +
                 "name='" + name + '\'' +
+                ", currentSprite=" + currentSprite +
+                ", currentHurtSprite=" + currentHurtSprite +
+                ", atk=" + atk +
+                ", def=" + def +
+                ", hp=" + hp +
+                ", goldOnWin=" + goldOnWin +
+                ", canBeSpared=" + canBeSpared +
                 '}';
     }
 
@@ -111,7 +115,6 @@ public class Enemy extends Rectangle {
     }
 
     public void spareEnemy() {
-        root.getChildren().remove(this);
         enemies.remove(this);
         Globals.vaporizedSound.play();
         setOpacity(0.5);

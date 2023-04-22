@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
-import java.util.HashSet;
+import static com.sith.Globals.DEVELOPER_MODE;
 
 public class FightingBox extends Rectangle {
 
@@ -34,55 +34,67 @@ public class FightingBox extends Rectangle {
 
     }
 
-    public void updatePosition(double sceneWidth, double sceneHeight, HashSet<String> keysPressed, double playerHeight, double playerWidth) {
-        // update velocity based on which keys are pressed
-        // vertical velocity
-        if (keysPressed.contains("U") && getY()>0) {
+    public void updatePosition(double sceneWidth, double sceneHeight, double playerHeight, double playerWidth) {
+        if(DEVELOPER_MODE) {
+            handleDEVMove(sceneWidth, sceneHeight);
+            handleDEVResize(playerHeight, playerWidth);
+        }
+    }
+
+    private void handleDEVMove(double sceneWidth, double sceneHeight) {
+        if(!devInputFBMoveUp() && !devInputFBMoveDown() && !devInputFBMoveLeft() && !devInputFBMoveRight()) {
+            isMoving = false;
+            return;
+        }
+
+        if(devInputFBMoveUp() && getY()>0) {
             setY(getY() - MOVE_AMOUNT);
-        } else if (keysPressed.contains("J") && sceneHeight-getY()>getHeight()) {
+        }
+
+        if(devInputFBMoveDown() && sceneHeight-getY()>getHeight()) {
             setY(getY() + MOVE_AMOUNT);
         }
 
         // horizontal velocity
-        if (keysPressed.contains("H") && getX()>0) {
+        if(devInputFBMoveLeft() && getX()>0) {
             setX(getX() - MOVE_AMOUNT);
-        } else if (keysPressed.contains("K") && sceneWidth-getX()>getWidth()) {
+        }
+
+        if(devInputFBMoveRight() && sceneWidth-getX()>getWidth()) {
             setX(getX() + MOVE_AMOUNT);
         }
 
-        if(!keysPressed.contains("U") && !keysPressed.contains("J") && !keysPressed.contains("H") && !keysPressed.contains("K")) {
-            isMoving = false;
-        }
-        else if(keysPressed.contains("U") || keysPressed.contains("J") || keysPressed.contains("H") || keysPressed.contains("K")) {
-            isMoving = true;
+        isMoving = true;
+    }
+
+    private void handleDEVResize(double playerHeight, double playerWidth) {
+        if(!devInputFBScaleHeightUp() && !devInputFBScaleHeightDown() && !devInputFBScaleWidthUp() && !devInputFBScaleWidthDown()) {
+            isResizing = false;
+            return;
         }
 
-        if(keysPressed.contains("NUMPAD8")) {
+        if(devInputFBScaleHeightUp()) {
             setHeight(getHeight()+2);
             setY(getY()-1);
         }
 
-        if(keysPressed.contains("NUMPAD5") && getHeight()>(playerHeight + playerHeight/5)) {
+        //Do not scale smaller than the player on height
+        if(devInputFBScaleHeightDown() && getHeight()>(playerHeight + playerHeight/5)) {
             setHeight(getHeight()-2);
             setY(getY()+1);
         }
 
-        if(keysPressed.contains("NUMPAD4")) {
+        if(devInputFBScaleWidthUp()) {
             setWidth(getWidth()+2);
             setX(getX()-1);
         }
 
-        if(keysPressed.contains("NUMPAD6") && getWidth()>(playerWidth + playerWidth/5)) {
+        //Do not scale smaller than the player on width
+        if(devInputFBScaleWidthDown() && getWidth()>(playerWidth + playerWidth/5)) {
             setWidth(getWidth()-2);
             setX(getX()+1);
         }
-
-        if(!keysPressed.contains("NUMPAD8") && !keysPressed.contains("NUMPAD5") && !keysPressed.contains("NUMPAD4") && !keysPressed.contains("NUMPAD6")) {
-            isResizing = false;
-        }
-        else if(keysPressed.contains("NUMPAD8") || keysPressed.contains("NUMPAD5") || keysPressed.contains("NUMPAD4") || keysPressed.contains("NUMPAD6")) {
-            isResizing = true;
-        }
+        isResizing = true;
     }
 
     public boolean getIsMoving() {
@@ -163,4 +175,30 @@ public class FightingBox extends Rectangle {
     public boolean hasFinishedDialog() {
         return !typing;
     }
+
+
+
+    //      --  Dev input start     -- //
+
+        //      --  Move input start     -- //
+        private boolean devInputFBMoveUp() {return Main.keysPressed.contains("U");}
+
+        private boolean devInputFBMoveLeft() {return Main.keysPressed.contains("H");}
+
+        private boolean devInputFBMoveDown() {return Main.keysPressed.contains("J");}
+
+        private boolean devInputFBMoveRight() {return Main.keysPressed.contains("K");}
+        //      --  Move input end     -- //
+
+        //      --  Scale input start     -- //
+        private boolean devInputFBScaleHeightUp() {return Main.keysPressed.contains("NUMPAD8");}
+
+        private boolean devInputFBScaleWidthUp() {return Main.keysPressed.contains("NUMPAD4");}
+
+        private boolean devInputFBScaleHeightDown() {return Main.keysPressed.contains("NUMPAD5");}
+
+        private boolean devInputFBScaleWidthDown() {return Main.keysPressed.contains("NUMPAD6");}
+        //      --  Scale input end     -- //
+
+    //      --  Dev input end     -- //
 }

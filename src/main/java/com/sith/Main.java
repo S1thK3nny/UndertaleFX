@@ -20,10 +20,9 @@ import javafx.util.Duration;
 
 import java.util.*;
 
+import static com.sith.Globals.DEVELOPER_MODE;
+
 public class Main extends Application {
-
-    final boolean DEVELOPER_MODE = true;
-
     interactiveButton[] buttons;
     itemButton itemButton;
     int currentSelectedButton = -1;
@@ -173,7 +172,7 @@ public class Main extends Application {
             enemiesBox.getChildren().add(enemy);
         }
 
-        new Enemy(root, enemies, enemiesBox, Globals.dummySprites, "DUMMY", 0, 0);
+        new Enemy(enemies, enemiesBox, Globals.dummySprites, "DUMMY", 0, 0);
         //Enemies end
 
 
@@ -186,7 +185,7 @@ public class Main extends Application {
         scene.setOnKeyPressed(event -> {
             keysPressed.add(event.getCode().toString());
 
-            handleDeveloperModeKeys(root);
+            handleDeveloperModeKeys();
             //The order of these two is important. 23014: Fixed the text skip after confirming final option
             handleGoneState();
             handleMenuState();
@@ -207,11 +206,11 @@ public class Main extends Application {
                     atRightBorder = player.getX() > (fb.getX() + fb.getWidth()) - (player.getWidth() + player.getWidth() / 6);
                     atTopBorder = player.getY() < fb.getY() + player.getHeight() / 6;
                     atBottomBorder = player.getY() > (fb.getY() + fb.getHeight()) - (player.getHeight() + player.getHeight() / 6);
-                    //we need the /5 to get accurate sprite border stuff
+                    //we need the /6 to get accurate sprite border stuff
 
                     Boolean[] borders = {atLeftBorder, atRightBorder, atTopBorder, atBottomBorder};
                     player.updatePosition(scene.getWidth(), scene.getHeight(), borders, wTimer); //using scene.get to correspond to window size update
-                    fb.updatePosition(scene.getWidth(), scene.getHeight(), keysPressed, player.getHeight(), player.getWidth());
+                    fb.updatePosition(scene.getWidth(), scene.getHeight(), player.getHeight(), player.getWidth());
                     player.checkBounds(fb, borders);
 
                     synchronized (projectiles) {
@@ -481,7 +480,7 @@ public class Main extends Application {
 
     //      --  Developer Mode Keys start    --  //
 
-    private void handleDeveloperModeKeys(Pane root) {
+    private void handleDeveloperModeKeys() {
         if (!DEVELOPER_MODE) return;
 
         if (keysPressed.contains("E") || keysPressed.contains("Q")) {
@@ -491,7 +490,7 @@ public class Main extends Application {
         } else if (keysPressed.contains("SPACE")) {
             handleDEVEnterMenu();
         } else if (keysPressed.contains("TAB")) {
-            handleDEVEnemySpawn(root);
+            handleDEVEnemySpawn();
         }
     }
 
@@ -520,8 +519,8 @@ public class Main extends Application {
             }
         }
 
-        private void handleDEVEnemySpawn(Pane root) {
-            Dummy spawnedEnemy = new Dummy(root, enemies, enemiesBox, "DUMMY "  + enemies.size(), 0, 0);
+        private void handleDEVEnemySpawn() {
+            Dummy spawnedEnemy = new Dummy(enemies, enemiesBox, "DUMMY "  + enemies.size(), 0, 0);
 
             TranslateTransition transition = new TranslateTransition(Duration.seconds(0.25), spawnedEnemy);
             spawnedEnemy.setTranslateX(-spawnedEnemy.getWidth());
@@ -535,10 +534,10 @@ public class Main extends Application {
                 transition2.play();
             }
 
-            if (enemies.size() > 4) {
+            if (enemiesBox.getChildren().size() > 4) {
                 enemies.clear();
                 enemiesBox.getChildren().clear();
-                new Enemy(root, enemies, enemiesBox, Globals.dummySprites, "DUMMY", 0, 0);
+                new Enemy(enemies, enemiesBox, Globals.dummySprites, "DUMMY", 0, 0);
             }
         }
 
@@ -626,14 +625,16 @@ public class Main extends Application {
 
                 deselectButtons();
                 buttons[currentSelectedButton].hideOptions();
+
+                //Act and Item button
                 if(buttons[currentSelectedButton].getWantsToReturnText()) {
                     fb.setCurrentTextVisible(true, buttons[currentSelectedButton].interact());
                     player.setState(Player.State.GONE);
                 }
+                //Fight and Mercy button
                 else {
                     buttons[currentSelectedButton].interact();
                     fb.setCurrentTextVisible(false);
-                    fb.skipDialog();
                     finishPlayerMove();
                 }
             }

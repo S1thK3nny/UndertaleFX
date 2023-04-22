@@ -40,9 +40,7 @@ public class test extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        scene.setOnKeyPressed(event -> {
-            keysPressed.add(event.getCode().toString());
-        });
+        scene.setOnKeyPressed(event -> keysPressed.add(event.getCode().toString()));
 
         scene.setOnKeyReleased(event -> keysPressed.remove(event.getCode().toString()));
 

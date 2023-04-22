@@ -3,6 +3,11 @@ package com.sith.buttons;
 import com.sith.Globals;
 import com.sith.Main;
 import com.sith.Player;
+import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 public class attackButton extends interactiveButton {
@@ -31,10 +36,20 @@ public class attackButton extends interactiveButton {
         firstRow.getChildren().clear();
         secondRow.getChildren().clear();
 
-        for (Text text : texts) {
-            firstRow.getChildren().add(text);
-        }
         configureText(45);
+
+        for (Text text : texts) {
+            Rectangle health = new Rectangle(Main.fb.getWidth() / 7, text.getLayoutBounds().getHeight() / 2, Color.LIME);
+            Rectangle lostHealth = new Rectangle(health.getWidth(), health.getHeight(), Color.RED);
+            HBox healthBar = new HBox(lostHealth, health);
+            healthBar.setSpacing(-health.getWidth());
+            HBox.setHgrow(healthBar, Priority.ALWAYS);
+            healthBar.setAlignment(Pos.CENTER_RIGHT);
+
+            HBox hbox = new HBox(text, healthBar);
+            hbox.setSpacing(text.getBaselineOffset());
+            firstRow.getChildren().add(hbox);
+        }
 
         try {
             Thread.sleep(20);
@@ -66,6 +81,13 @@ public class attackButton extends interactiveButton {
         }
 
         player.movePlayer(getTextX(menu, player.getWidth()), getTextY(menu, player.getHeight()));
+    }
+
+    //We have to override this function cause otherwise it won't work
+    @Override
+    public double getTextY(int i, double playerHeight) {
+        if(i>texts.size() || i<0) return 0;
+        return Main.fb.getY() + (texts.get(i).getParent().getLayoutY() + texts.get(i).getLayoutBounds().getHeight()/2);
     }
 
     @Override
