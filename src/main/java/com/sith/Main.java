@@ -34,6 +34,7 @@ public class Main extends Application {
 
     static Text curAndMaxHealth;
     public static FightingBox fb;
+    public static BattleTarget bt;
 
     double fbWidth;
     double fbHeight;
@@ -127,6 +128,7 @@ public class Main extends Application {
         fbX = scene.getWidth()/2 - fbWidth/2;
         fbY = scene.getHeight()/2 - fbHeight/4;
         fb = new FightingBox(fbX, fbY, fbWidth, fbHeight);
+        bt = new BattleTarget();
         //fb end
 
 
@@ -177,7 +179,7 @@ public class Main extends Application {
 
 
 
-        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, fb, fb.getCurrentText(), buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions(), enemiesBox);
+        root.getChildren().addAll(underFB, horizontalButtonAlignment, player, fb, fb.getCurrentText(), bt, buttons[0].getOptions(), buttons[1].getOptions(), buttons[2].getOptions(), buttons[3].getOptions(), enemiesBox);
 
 
 
@@ -644,7 +646,13 @@ public class Main extends Application {
 
                 interactiveButton.hasSelectedEnemy = true;
                 buttons[currentSelectedButton].actionAfterEnemySelected();
-                if(currentSelectedButton!=0) movePlayerToTextOption(0);
+                if(currentSelectedButton==0) {
+                    player.setVisible(false);
+                    deselectButtons();
+                }
+                else {
+                    movePlayerToTextOption(0);
+                }
             }
 
             private void handleMENUUIButtonSelect() {

@@ -94,10 +94,12 @@ public class attackButton extends interactiveButton {
     public void actionAfterEnemySelected() {
         super.actionAfterEnemySelected();
         options.setVisible(false);
+        Main.bt.setVisible(true);
     }
 
     @Override
     public String interact() {
+        Globals.sliceSound.play();
         return "* Oh no...what happened here?! " + option;
     }
 }

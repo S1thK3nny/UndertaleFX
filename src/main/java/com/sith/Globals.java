@@ -50,6 +50,8 @@ public class Globals {
     public static final AudioClip healSound = new AudioClip(new File("./src/main/resources/sounds/snd_heal_c.wav").toURI().toString());
     public static final AudioClip levelUpSound = new AudioClip(new File("./src/main/resources/sounds/snd_levelup.wav").toURI().toString());
     public static final AudioClip vaporizedSound = new AudioClip(new File("./src/main/resources/sounds/snd_vaporized.wav").toURI().toString());
+    public static final AudioClip sliceSound = new AudioClip(new File("./src/main/resources/sounds/snd_laz.wav").toURI().toString()); //...laz? Why the laz??? I don't get it, I really don't.
+    public static final AudioClip damageSound = new AudioClip(new File("./src/main/resources/sounds/snd_damage.wav").toURI().toString());
     public static final Media surpriseSound = new Media(new File("./src/main/resources/sounds/snd_dumbvictory.wav").toURI().toString());
 
     /*Music
