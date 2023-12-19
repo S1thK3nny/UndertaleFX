@@ -16,9 +16,9 @@ public class Dummy extends Enemy {
     public Dummy(ArrayList<Enemy> enemies, HBox enemiesBox, String name, int atk, int def) {
         super(enemies, enemiesBox, Globals.dummySprites, name, atk, def);
 
-        actOptions.add("Insult");
-        actOptions.add("Surprise");
-        actOptions.add("Compliment");
+        actOptionsDisplayName.add("Insult");
+        actOptionsDisplayName.add("Surprise");
+        actOptionsDisplayName.add("Compliment");
         checkDescription = "\n* A dummy of his own, different from the rest";
 
         hp = 15;
@@ -74,8 +74,8 @@ public class Dummy extends Enemy {
     private String makeHimNeutral(int subStringInt, String returnMessage) {
         name = name.substring(subStringInt);
 
-        actOptions.remove(actOptions.size()-1);
-        actOptions.add("Compliment");
+        actOptionsDisplayName.remove(actOptionsDisplayName.size()-1);
+        actOptionsDisplayName.add("Compliment");
 
         isSad = false;
         isGlad = false;
@@ -107,8 +107,8 @@ public class Dummy extends Enemy {
         this.mood = mood;
 
 
-        actOptions.remove(actOptions.size()-1);
-        actOptions.add(nextActOption);
+        actOptionsDisplayName.remove(actOptionsDisplayName.size()-1);
+        actOptionsDisplayName.add(nextActOption);
 
         return returnMessage;
     }

@@ -31,8 +31,8 @@ public class actButton extends interactiveButton {
     public void actionAfterEnemySelected() {
         super.actionAfterEnemySelected();
         texts.clear();
-        for(int i = 0; i< Main.enemies.get(selectedEnemy).getActOptions().size(); i++) {
-            Text t = new Text("* " + Main.enemies.get(selectedEnemy).getActOptions().get(i));
+        for(int i = 0; i< Main.enemies.get(selectedEnemy).getActOptionsDisplayName().size(); i++) {
+            Text t = new Text("* " + Main.enemies.get(selectedEnemy).getActOptionsDisplayName().get(i));
             texts.add(t);
         }
 

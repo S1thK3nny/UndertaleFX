@@ -23,6 +23,11 @@ public class Player extends Rectangle {
 
     private static final double MOVE_AMOUNT = 3; // how many pixels to move each time
     private static final double GRAVITY_AMOUNT = 3.5; // how many pixels to fall each time
+
+    private final int MAX_LEVEL = 20;
+    private final ImagePattern ICON_REDHEART = new ImagePattern(Globals.redHeart);
+    private final ImagePattern ICON_BLUEHEART = new ImagePattern(Globals.blueHeart);
+
     boolean isMoving = false;
     boolean isJumping = false;
 
@@ -45,30 +50,37 @@ public class Player extends Rectangle {
 
     public Player(double x, double y, double width, double height) {
         super(x, y, width, height);
-        setFill(new ImagePattern(Globals.redHeart));
+        setFill(ICON_REDHEART);
         setupHealth();
     }
 
+
+
+    // Deal with health setup start
     public void setupHealth() {
         int baseHealth = 20;
-        if(LV==20) {
-            maxHealth = 99;
-        }
-        else {
-            maxHealth = baseHealth + ((LV-1)*4);
-        }
-        if(curHealth==0 || curHealth>=maxHealth) {
-            curHealth = maxHealth;
-        }
-        else {
-            if(LV==20) {
-                curHealth += 7;
+        maxHealth = calculateMaxHealth(baseHealth);
+        curHealth = calculateInitialHealth();
+    }
+
+    private int calculateMaxHealth(int baseHealth) {
+        return (LV == MAX_LEVEL) ? 99 : baseHealth + ((LV - 1) * 4);
+    }
+
+    private int calculateInitialHealth() {
+        if (curHealth == 0 || curHealth >= maxHealth) {
+            return maxHealth;
+        } else {
+            curHealth += 4;
+            if (LV == MAX_LEVEL) {
+                curHealth += 3;
             }
-            else {
-                curHealth += 4;
-            }
+            return curHealth;
         }
     }
+    // Deal with health setup end
+
+
 
     public void updatePosition(double sceneWidth, double sceneHeight, Boolean[] borders, boolean wTimer) {
         double vy;
@@ -114,12 +126,7 @@ public class Player extends Rectangle {
         setX(Math.min(Math.max(getX() + vx, 0), sceneWidth - getWidth()));
         setY(Math.min(Math.max(getY() + vy, 0), sceneHeight - getHeight()));
 
-        if(!(userInputTop() && userInputLeft() && userInputDown() && userInputRight())) {
-            isMoving = false;
-        }
-        else if(userInputTop() || userInputLeft() || userInputDown() || userInputRight()) {
-            isMoving = true;
-        }
+        isMoving = userInputTop() || userInputLeft() || userInputDown() || userInputRight();
 
         if(borders[3]) {
             // player has landed on the ground
@@ -128,33 +135,30 @@ public class Player extends Rectangle {
     }
 
     public void checkBounds(FightingBox fb, Boolean[] borders) {
-        if(fb.getIsMoving() && fb.getIsResizing()) {
-            if(borders[0]) setX(getX() + fb.getMoveAmount()*2);
-            if(borders[1]) setX(getX() - fb.getMoveAmount()*2);
-            if(borders[2]) setY(getY() + fb.getMoveAmount()*2);
-            if(borders[3]) setY(getY() - fb.getMoveAmount()*2);
-        }
-        else if(fb.getIsMoving() || fb.getIsResizing()) {
-            if(borders[0]) setX(getX() + fb.getMoveAmount());
-            if(borders[1]) setX(getX() - fb.getMoveAmount());
-            if(borders[2]) setY(getY() + fb.getMoveAmount());
-            if(borders[3]) setY(getY() - fb.getMoveAmount());
-        }
+        double moveAmount = fb.getMoveAmount();
+        double adjustment = fb.getIsMoving() && fb.getIsResizing() ? moveAmount * 2 : moveAmount;
+
+        if (borders[0]) setX(getX() + adjustment);
+        if (borders[1]) setX(getX() - adjustment);
+        if (borders[2]) setY(getY() + adjustment);
+        if (borders[3]) setY(getY() - adjustment);
     }
 
     public void setState(State state) {
-        switch (state) {
-            case NORMAL, default -> {
-                setFill(new ImagePattern(Globals.redHeart));
-                setVisible(true);
-            }
-            case GRAVITY -> {
-                setFill(new ImagePattern(Globals.blueHeart));
-                setVisible(true);
-            }
-            case GONE -> setVisible(false);
-        }
+        setPlayerState(
+                switch (state) {
+                    case NORMAL, default -> ICON_REDHEART;
+                    case GRAVITY -> ICON_BLUEHEART;
+                    case GONE -> null;
+                },
+                state != State.GONE
+        );
         this.state = state;
+    }
+
+    private void setPlayerState(ImagePattern fill, boolean isVisible) {
+        setFill(fill);
+        setVisible(isVisible);
     }
 
     public Enum<State> getState() {
@@ -178,8 +182,11 @@ public class Player extends Rectangle {
     }
 
     public void setCurHealth(int damage, boolean gotHit) {
-        this.curHealth -= damage;
-        Main.setHealthText(curHealth, maxHealth, damage, true);
+        // Don't want to land below 0 health
+        if(curHealth>0) {
+            this.curHealth -= damage;
+            Main.setHealthText(curHealth, maxHealth, damage, true);
+        }
         if(gotHit) {
             Globals.hurtSound.play();
             hitEffect();
@@ -228,7 +235,7 @@ public class Player extends Rectangle {
     }
 
     public void increaseLV() {
-        if(!(LV>=20)) {
+        if(!(LV>=MAX_LEVEL)) {
             LV++;
             Globals.levelUpSound.play();
             setupHealth();

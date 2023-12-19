@@ -27,11 +27,6 @@ public class Main extends Application {
     itemButton itemButton;
     int currentSelectedButton = -1;
 
-    boolean atTopBorder = false;
-    boolean atBottomBorder = false;
-    boolean atLeftBorder = false;
-    boolean atRightBorder = false;
-
     static Text curAndMaxHealth;
     public static FightingBox fb;
     public static BattleTarget bt;
@@ -199,18 +194,23 @@ public class Main extends Application {
         //OnKey end
 
 
-
         // start animation timer to update everything necessary start
         new AnimationTimer() {
-            public void handle(long currentNanoTime) {
-                if (!(player.getState() == Player.State.MENU)) {
-                    atLeftBorder = player.getX() < fb.getX() + player.getWidth() / 6;
-                    atRightBorder = player.getX() > (fb.getX() + fb.getWidth()) - (player.getWidth() + player.getWidth() / 6);
-                    atTopBorder = player.getY() < fb.getY() + player.getHeight() / 6;
-                    atBottomBorder = player.getY() > (fb.getY() + fb.getHeight()) - (player.getHeight() + player.getHeight() / 6);
-                    //we need the /6 to get accurate sprite border stuff
+            final Boolean[] borders = new Boolean[4]; //LeftBorder, RightBorder, TopBorder, RightBorder
+            final int DIVIDER = 6;
+            final double DIVIDED_PLAYERWIDTH = player.getWidth()/DIVIDER;
+            final double DIVIDED_PLAYERHEIGHT = player.getHeight()/DIVIDER;
 
-                    Boolean[] borders = {atLeftBorder, atRightBorder, atTopBorder, atBottomBorder};
+            public void updateBorders() {
+                borders[0] = player.getX() < fb.getX() + DIVIDED_PLAYERWIDTH;
+                borders[1] = player.getX() > (fb.getX() + fb.getWidth()) - (player.getWidth() + DIVIDED_PLAYERWIDTH);
+                borders[2] = player.getY() < fb.getY() + DIVIDED_PLAYERHEIGHT;
+                borders[3] = player.getY() > (fb.getY() + fb.getHeight()) - (player.getHeight() + DIVIDED_PLAYERHEIGHT);
+            }
+
+            public void handle(long currentNanoTime) {
+                if(player.getState() != Player.State.MENU) {
+                    updateBorders();
                     player.updatePosition(scene.getWidth(), scene.getHeight(), borders, wTimer); //using scene.get to correspond to window size update
                     fb.updatePosition(scene.getWidth(), scene.getHeight(), player.getHeight(), player.getWidth());
                     player.checkBounds(fb, borders);
@@ -236,8 +236,8 @@ public class Main extends Application {
                 }
             }
         }.start();
-        // start animation timer to update everything necessary end
     }
+
 
 
 

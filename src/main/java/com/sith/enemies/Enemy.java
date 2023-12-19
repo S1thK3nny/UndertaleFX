@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class Enemy extends Rectangle {
     protected String name;
-    protected final ArrayList<String> actOptions = new ArrayList<>();
+    protected final ArrayList<String> actOptionsDisplayName = new ArrayList<>();
     protected Image[] sprites;
     protected Image currentSprite;
     protected Image currentHurtSprite;
@@ -32,7 +32,7 @@ public class Enemy extends Rectangle {
         currentSprite = sprites[0];
         currentHurtSprite = sprites[1];
 
-        actOptions.add("Check");
+        actOptionsDisplayName.add("Check");
         checkDescription = "\n* A cotton heart and a button eye\n* You are the apple of my eye";
 
         setFill(new ImagePattern(currentSprite));
@@ -49,8 +49,8 @@ public class Enemy extends Rectangle {
         return name;
     }
 
-    public ArrayList<String> getActOptions() {
-        return actOptions;
+    public ArrayList<String> getActOptionsDisplayName() {
+        return actOptionsDisplayName;
     }
 
     @Override
@@ -90,6 +90,7 @@ public class Enemy extends Rectangle {
         return "actOption4";
     }
 
+    //I admit defeat. Do not touch this ever again, anything else will just be in vain. Believe me.
     public String playerActed(int actOption) {
         switch (actOption) {
             case 0 -> {
