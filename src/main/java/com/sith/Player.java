@@ -187,10 +187,7 @@ public class Player extends Rectangle {
             this.curHealth -= damage;
             Main.setHealthText(curHealth, maxHealth, damage, true);
         }
-        if(gotHit) {
-            Globals.hurtSound.play();
-            hitEffect();
-        }
+        if(gotHit) hitEffect();
     }
 
     public boolean getWentIntoButton() {
@@ -202,6 +199,7 @@ public class Player extends Rectangle {
     }
 
     public void hitEffect() {
+        Globals.hurtSound.play();
         invincible = true;
         //Don't ever use timers for graphics changing stuff, use timelines!
         Timeline timeline = new Timeline(
