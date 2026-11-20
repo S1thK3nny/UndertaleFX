@@ -10,6 +10,6 @@ Original sounds, as well as music have also been added already . So far it plays
 
 ## UndertaleFX is inspired by Toby Fox's game Undertale. I would like to acknowledge Toby Fox and the entire Undertale development team for creating such a fantastic game that serves as the foundation for this project. Sprites, sounds and music have been taken from Undertale to support this project, as the goal is to increase my programming skill and Java/JavaFX knowledge.
 
- ![LOGO](https://raw.githubusercontent.com/S1thK3nny/UndertaleFX/master/src/main/resources/images/Splash.png?token=GHSAT0AAAAAACDPYIOEH74777HKR7DOC4VQZER5TBA)
- ![PREVIEW_ONE](https://raw.githubusercontent.com/S1thK3nny/UndertaleFX/master/src/main/resources/images/preview/preview1.png?token=GHSAT0AAAAAACDPYIOFK6PHMKXEY7DP7YBCZER5V4A)
- ![PREVIEW_TWO](https://raw.githubusercontent.com/S1thK3nny/UndertaleFX/master/src/main/resources/images/preview/preview2.png?token=GHSAT0AAAAAACDPYIOE6ILLCWZ3ZDZZK4WQZER5V6A)
+ ![LOGO](src/main/resources/images/Splash.png)
+ ![PREVIEW_ONE](src/main/resources/images/preview/preview1.png)
+ ![PREVIEW_TWO](src/main/resources/images/preview/preview2.png)
